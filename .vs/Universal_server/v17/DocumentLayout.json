@@ -1,0 +1,37 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\Fouaad\\Desktop\\Saif Sami\\Saif Sami\\Universal_server\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{D4942ED6-9D3A-4C6A-BDD0-17739CA06874}|Universal_server.csproj|c:\\users\\fouaad\\desktop\\saif sami\\saif sami\\universal_server\\data\\universaldbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D4942ED6-9D3A-4C6A-BDD0-17739CA06874}|Universal_server.csproj|solutionrelative:data\\universaldbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "UniversalDbContext.cs",
+              "DocumentMoniker": "C:\\Users\\Fouaad\\Desktop\\Saif Sami\\Saif Sami\\Universal_server\\Data\\UniversalDbContext.cs",
+              "RelativeDocumentMoniker": "Data\\UniversalDbContext.cs",
+              "ToolTip": "C:\\Users\\Fouaad\\Desktop\\Saif Sami\\Saif Sami\\Universal_server\\Data\\UniversalDbContext.cs",
+              "RelativeToolTip": "Data\\UniversalDbContext.cs",
+              "ViewState": "AgIAAD8AAAAAAAAAAADwv1AAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-10T08:49:01.625Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
