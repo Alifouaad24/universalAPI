@@ -21,7 +21,7 @@ namespace Universal_server.Controllers.Admin
         [HttpGet]
         public async Task<IActionResult> GetAllBusiness()
         {
-            var businesses = await db.Businesses.ToListAsync();
+            var businesses = await db.Businesses.Where(b => b.visible == true).ToListAsync();
             return Ok(businesses);
         }
 
@@ -44,35 +44,122 @@ namespace Universal_server.Controllers.Admin
                 Business_whatsapp = model.Business_whatsapp,
                 Business_email = model.Business_email,
                 Insert_by = "",
-                Insert_on = DateOnly.FromDateTime(DateTime.Now),
+                Insert_on = DateOnly.FromDateTime(DateTime.UtcNow),
                 visible = true,
             };
 
             await db.Businesses.AddAsync(business);
+            await db.SaveChangesAsync();
 
-            var bus_busType = new Business_BusinessType
+            if (model?.BusinessTypeId?.Count > 0)
             {
-                Business_id = business.Business_id,
-                Business_type_id = model.BusinessTypeId,
-                Insert_by = "",
-                Insert_on = DateOnly.FromDateTime(DateTime.Now),
-                visible = true,
-            };
-            await db.Business_BusinessTypes.AddAsync(bus_busType);
+                var businessTypes = model.BusinessTypeId.Select(id =>
+                    new Business_BusinessType
+                    {
+                        Business_id = business.Business_id,
+                        Business_type_id = id,
+                        Insert_on = DateOnly.FromDateTime(DateTime.UtcNow),
+                        visible = true
+                    }).ToList();
+
+                await db.Business_BusinessTypes.AddRangeAsync(businessTypes);
+            }
 
 
-            var busines_Address = new Business_Address
+            if (model?.AddressId?.Count > 0)
             {
-                Business_id = business.Business_id,
-                Address_id = model.AddressId,
-                Insert_by = "",
-                Insert_on = DateOnly.FromDateTime(DateTime.Now),
-                visible = true,
-            };
-            await db.Business_Addresses.AddAsync(busines_Address);
+                var businessAddresses = model.AddressId.Select(id =>
+                    new Business_Address
+                    {
+                        Business_id = business.Business_id,
+                        Address_id = id,
+                        Insert_on = DateOnly.FromDateTime(DateTime.UtcNow),
+                        visible = true
+                    }).ToList();
+
+                await db.Business_Addresses.AddRangeAsync(businessAddresses);
+            }
+
             await db.SaveChangesAsync();
 
             return Ok(business);
         }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateBusiness(int id, [FromBody] BusinessDTO model)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var business = await db.Businesses
+                .Include(b => b.BusinessTypes)
+                .Include(b => b.BusinessAddresses)
+                .FirstOrDefaultAsync(b => b.Business_id == id);
+
+            if (business == null)
+                return NotFound();
+
+
+            business.Business_name = model.Business_name;
+            business.CountryId = model.CountryId;
+            business.Business_phone = model.Business_phone;
+            business.Business_webSite = model.Business_webSite;
+            business.Business_fb = model.Business_fb;
+            business.Business_instgram = model.Business_instgram;
+            business.Business_tiktok = model.Business_tiktok;
+            business.Business_google = model.Business_google;
+            business.Business_youtube = model.Business_youtube;
+            business.Business_whatsapp = model.Business_whatsapp;
+            business.Business_email = model.Business_email;
+
+
+            if (model?.BusinessTypeId != null)
+            {
+                db.Business_BusinessTypes.RemoveRange(business.BusinessTypes);
+
+                var newTypes = model.BusinessTypeId.Select(idType =>
+                    new Business_BusinessType
+                    {
+                        Business_id = business.Business_id,
+                        Business_type_id = idType,
+                        Insert_on = DateOnly.FromDateTime(DateTime.UtcNow),
+                        visible = true
+                    }).ToList();
+
+                await db.Business_BusinessTypes.AddRangeAsync(newTypes);
+            }
+
+
+            if (model?.AddressId != null)
+            {
+                db.Business_Addresses.RemoveRange(business.BusinessAddresses);
+
+                var newAddresses = model.AddressId.Select(addrId =>
+                    new Business_Address
+                    {
+                        Business_id = business.Business_id,
+                        Address_id = addrId,
+                        Insert_on = DateOnly.FromDateTime(DateTime.UtcNow),
+                        visible = true
+                    }).ToList();
+
+                await db.Business_Addresses.AddRangeAsync(newAddresses);
+            }
+
+            await db.SaveChangesAsync();
+            return Ok(business);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteBusiness(int id)
+        {
+            var business = await db.Businesses.FindAsync(id);
+            if (business == null) return NotFound();
+
+            business.visible = false;
+            await db.SaveChangesAsync();
+            return Ok(business);
+        }
+
     }
 }

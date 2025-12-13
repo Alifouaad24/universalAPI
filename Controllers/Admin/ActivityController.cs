@@ -21,7 +21,7 @@ namespace Universal_server.Controllers.Admin
         [HttpGet]
         public async Task<IActionResult> getAllActivities()
         {
-            var activities = await db.Activiities.ToListAsync();
+            var activities = await db.Activiities.Where(b => b.visible == true).ToListAsync();
             return Ok(activities);
         }
 
@@ -42,6 +42,34 @@ namespace Universal_server.Controllers.Admin
             await db.Activiities.AddAsync(activity);
             await db.SaveChangesAsync();
             return Ok(activity);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> EditActivity(int id, [FromBody] ActivityDto model)
+        {
+            var act = await db.Activiities.FindAsync(id);
+            if (act == null) return NotFound();
+
+            act.Description = model.Description;
+            act.Business_id = model.Business_id;
+
+            await db.SaveChangesAsync();
+
+            return Ok(act);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteActivity(int id)
+        {
+            var act = await db.Activiities.FindAsync(id);
+            if (act == null) return NotFound();
+
+            act.visible = false;
+            await db.SaveChangesAsync();
+            return Ok(new
+            {
+                msg = "Activity deleted sauccessfully! "
+            });
         }
     }
 }

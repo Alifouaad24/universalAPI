@@ -21,7 +21,7 @@ namespace Universal_server.Controllers.Admin
         [HttpGet]
         public async Task<IActionResult> GetAllCountries()
         {
-            var Countries = await db.Countries.ToListAsync();
+            var Countries = await db.Countries.Where(b => b.visible == true).ToListAsync();
             return Ok(Countries);
         }
 
@@ -38,6 +38,30 @@ namespace Universal_server.Controllers.Admin
                 visible = true,
             };
             await db.Countries.AddAsync(country);
+            await db.SaveChangesAsync();
+            return Ok(country);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> EditCountry(int id, [FromBody] CountryDto model)
+        {
+            var country = await db.Countries.FindAsync(id);
+            if (country == null) return NotFound();
+
+            country.Name = model.Name;
+            country.Insert_by = "";
+
+            await db.SaveChangesAsync();
+            return Ok(country);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteCountry(int id)
+        {
+            var country = await db.Countries.FindAsync(id);
+            if (country == null) return NotFound();
+
+            country.visible = false;
             await db.SaveChangesAsync();
             return Ok(country);
         }

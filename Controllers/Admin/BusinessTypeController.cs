@@ -21,7 +21,7 @@ namespace Universal_server.Controllers.Admin
         [HttpGet]
         public async Task<IActionResult> getAllBusinessesType()
         {
-            var bus_types = await db.Business_types.ToListAsync();
+            var bus_types = await db.Business_types.Where(b => b.visible == true).ToListAsync();
             return Ok(bus_types);
         }
 

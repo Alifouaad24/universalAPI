@@ -18,8 +18,8 @@ namespace Universal_server.Models.Helper_models
         public string? Business_whatsapp { get; set; }
         public string? Business_email { get; set; }
 
-        public int BusinessTypeId { get; set; }
-        public int AddressId { get; set; }
+        public List<int>? BusinessTypeId { get; set; }
+        public List<int>? AddressId { get; set; }
 
     }
 }

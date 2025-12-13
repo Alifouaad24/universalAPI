@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Diagnostics;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -21,7 +22,7 @@ namespace Universal_server.Controllers.Admin
         [HttpGet]
         public async Task<IActionResult> GetAllServices() 
         {
-            var services = await db.Services.ToListAsync();
+            var services = await db.Services.Where(b => b.visible == true).ToListAsync();
             return Ok(services);
         }
 
@@ -39,6 +40,31 @@ namespace Universal_server.Controllers.Admin
                 visible = true,
             };
             await db.Services.AddAsync(service);
+            await db.SaveChangesAsync();
+            return Ok(service);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> EditService(int id, [FromBody] ServiceDto model)
+        {
+            var service = await db.Services.FindAsync(id);
+            if (service == null) return NotFound();
+
+            service.Description = model.Description;
+            service.Activity_id = model.Activity_id;
+            service.Insert_by = "";
+
+            await db.SaveChangesAsync();
+            return Ok(service);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteService(int id)
+        {
+            var service = await db.Services.FindAsync(id);
+            if (service == null) return NotFound();
+
+            service.visible = false;
             await db.SaveChangesAsync();
             return Ok(service);
         }
