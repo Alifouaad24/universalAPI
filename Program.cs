@@ -5,15 +5,21 @@ using Universal_server.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Configuration
+    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+    .AddJsonFile(
+        $"appsettings.{builder.Environment.EnvironmentName}.json",
+        optional: true,
+        reloadOnChange: true
+    );
+
+
 builder.Services.AddDbContext<UniversalDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Identity
 builder.Services.AddIdentityCore<IdentityUser>()
     .AddEntityFrameworkStores<UniversalDbContext>();
-
-
-
 
 
 // Swagger
