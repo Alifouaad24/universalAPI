@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "nypT9OZjnzs=",
+  "dgSpecHash": "GkDRj3lZyag=",
   "success": true,
-  "projectFilePath": "C:\\Users\\Fouaad\\Desktop\\Saif Sami\\Saif Sami\\Universal_server\\Universal_server.csproj",
+  "projectFilePath": "C:\\Users\\Fouaad\\Desktop\\GitHub Projects\\universalAPI\\Universal_server.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Fouaad\\.nuget\\packages\\azure.core\\1.35.0\\azure.core.1.35.0.nupkg.sha512",
     "C:\\Users\\Fouaad\\.nuget\\packages\\azure.identity\\1.10.3\\azure.identity.1.10.3.nupkg.sha512",

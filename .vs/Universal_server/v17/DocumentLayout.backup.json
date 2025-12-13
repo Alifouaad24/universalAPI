@@ -3,10 +3,6 @@
   "WorkspaceRootPath": "C:\\Users\\Fouaad\\Desktop\\Saif Sami\\Saif Sami\\Universal_server\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Fouaad\\Desktop\\Saif Sami\\Saif Sami\\Universal_server\\Migrations\\20251210213305_addServiceTBL.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Migrations\\20251210213305_addServiceTBL.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{D4942ED6-9D3A-4C6A-BDD0-17739CA06874}|Universal_server.csproj|c:\\users\\fouaad\\desktop\\saif sami\\saif sami\\universal_server\\data\\universaldbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{D4942ED6-9D3A-4C6A-BDD0-17739CA06874}|Universal_server.csproj|solutionrelative:data\\universaldbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
@@ -23,25 +19,12 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "20251210213305_addServiceTBL.cs",
-              "DocumentMoniker": "C:\\Users\\Fouaad\\Desktop\\Saif Sami\\Saif Sami\\Universal_server\\Migrations\\20251210213305_addServiceTBL.cs",
-              "RelativeDocumentMoniker": "Migrations\\20251210213305_addServiceTBL.cs",
-              "ToolTip": "C:\\Users\\Fouaad\\Desktop\\Saif Sami\\Saif Sami\\Universal_server\\Migrations\\20251210213305_addServiceTBL.cs",
-              "RelativeToolTip": "Migrations\\20251210213305_addServiceTBL.cs",
-              "ViewState": "AgIAABgAAAAAAAAAAAAkwDEAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-10T21:33:06.195Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
               "Title": "UniversalDbContext.cs",
               "DocumentMoniker": "C:\\Users\\Fouaad\\Desktop\\Saif Sami\\Saif Sami\\Universal_server\\Data\\UniversalDbContext.cs",
               "RelativeDocumentMoniker": "Data\\UniversalDbContext.cs",
               "ToolTip": "C:\\Users\\Fouaad\\Desktop\\Saif Sami\\Saif Sami\\Universal_server\\Data\\UniversalDbContext.cs",
               "RelativeToolTip": "Data\\UniversalDbContext.cs",
-              "ViewState": "AgIAAD8AAAAAAAAAAADwv0wAAAAcAAAAAAAAAA==",
+              "ViewState": "AgIAAD8AAAAAAAAAAADwv1AAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-12-10T08:49:01.625Z",
               "EditorCaption": ""
