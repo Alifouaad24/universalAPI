@@ -311,3 +311,4 @@ C:\Users\Fouaad\Desktop\GitHub Projects\universalAPI\obj\Debug\net8.0\refint\Uni
 C:\Users\Fouaad\Desktop\GitHub Projects\universalAPI\obj\Debug\net8.0\Universal_server.pdb
 C:\Users\Fouaad\Desktop\GitHub Projects\universalAPI\obj\Debug\net8.0\Universal_server.genruntimeconfig.cache
 C:\Users\Fouaad\Desktop\GitHub Projects\universalAPI\obj\Debug\net8.0\ref\Universal_server.dll
+C:\Users\Fouaad\Desktop\GitHub Projects\universalAPI\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll

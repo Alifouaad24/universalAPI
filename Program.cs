@@ -1,10 +1,11 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Text;
 using Universal_server.Data;
+using Universal_server.Models;
 using Universal_server.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,8 +23,17 @@ builder.Services.AddDbContext<UniversalDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Identity
-builder.Services.AddIdentityCore<IdentityUser>()
-    .AddEntityFrameworkStores<UniversalDbContext>();
+builder.Services.AddIdentity<IdentityUserData, IdentityRole>(options =>
+{
+    options.Password.RequireDigit = false;        
+    options.Password.RequireLowercase = false;     
+    options.Password.RequireUppercase = false;          
+    options.Password.RequireNonAlphanumeric = false;   
+    options.Password.RequiredLength = 1;
+    options.User.RequireUniqueEmail = true;
+})
+    .AddEntityFrameworkStores<UniversalDbContext>()
+    .AddDefaultTokenProviders();
 
 
 // Swagger
@@ -36,6 +46,17 @@ builder.Services.AddScoped<GenerateToken>();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend",
+        policy =>
+        {
+            policy.AllowAnyOrigin().AllowAnyHeader()
+                .AllowAnyMethod();
+        });
+});
+
 
 builder.Services.AddAuthentication(options =>
 {
@@ -75,13 +96,14 @@ if (!app.Environment.IsDevelopment())
 app.UseSwagger();
 app.UseSwaggerUI();
 
-app.UseAuthentication();
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+app.UseCors("AllowFrontend");
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
