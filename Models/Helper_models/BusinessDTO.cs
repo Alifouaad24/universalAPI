@@ -21,5 +21,9 @@ namespace Universal_server.Models.Helper_models
         public List<int>? BusinessTypeId { get; set; }
         public List<int>? AddressId { get; set; }
 
+        public AddressDto? address { get; set; }
+
+        public List<ServiceDto>? Services { get; set; }
+
     }
 }

@@ -21,7 +21,9 @@ namespace Universal_server.Controllers.Admin
         [HttpGet]
         public async Task<IActionResult> GetAllCountries()
         {
-            var Countries = await db.Countries.Where(b => b.visible == true).ToListAsync();
+            var Countries = await db.Countries
+                .Include(b => b.Businesses)
+                .Where(b => b.visible == true).ToListAsync();
             return Ok(Countries);
         }
 

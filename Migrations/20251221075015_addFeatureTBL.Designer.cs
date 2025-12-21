@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Universal_server.Data;
 
@@ -11,9 +12,11 @@ using Universal_server.Data;
 namespace Universal_server.Migrations
 {
     [DbContext(typeof(UniversalDbContext))]
-    partial class UniversalDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251221075015_addFeatureTBL")]
+    partial class addFeatureTBL
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -725,6 +728,9 @@ namespace Universal_server.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Service_id"));
+
+                    b.Property<int?>("Activity_id")
+                        .HasColumnType("int");
 
                     b.Property<string>("Description")
                         .IsRequired()

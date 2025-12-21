@@ -56,6 +56,55 @@ namespace Universal_server.Data
             builder.Entity<Inventory_business>().Property(x => x.visible).HasDefaultValue(true);
             builder.Entity<Inventoy_images>().Property(x => x.visible).HasDefaultValue(true);
             builder.Entity<Service>().Property(x => x.visible).HasDefaultValue(true);
+
+            builder.Entity<UsersBusinesses>().HasKey(ub => new
+            {
+                ub.UserId,
+                ub.Business_id
+            });
+
+            builder.Entity<UsersBusinesses>()
+                .HasOne(u => u.UserData)
+                .WithMany(ud => ud.UsersBusinesses)
+                .HasForeignKey(ub => ub.UserId);
+
+            builder.Entity<UsersBusinesses>()
+                .HasOne(u => u.Business)
+                .WithMany(ud => ud.UsersBusinesses)
+                .HasForeignKey(ub => ub.Business_id);
+
+
+            builder.Entity<Business_Service>().HasKey(ub => new
+            {
+                ub.Business_id,
+                ub.Service_id
+            });
+
+            builder.Entity<Business_Service>()
+                .HasOne(u => u.Business)
+                .WithMany(ud => ud.Business_Services)
+                .HasForeignKey(ub => ub.Business_id);
+
+            builder.Entity<Business_Service>()
+                .HasOne(u => u.Service)
+                .WithMany(ud => ud.Business_Services)
+                .HasForeignKey(ub => ub.Service_id);
+
+            builder.Entity<Activity_Service>().HasKey(ub => new
+            {
+                ub.Activity_id,
+                ub.Service_id
+            });
+
+            builder.Entity<Activity_Service>()
+                .HasOne(u => u.Activiity)
+                .WithMany(ud => ud.Activity_Services)
+                .HasForeignKey(ub => ub.Activity_id);
+
+            builder.Entity<Activity_Service>()
+                .HasOne(u => u.Service)
+                .WithMany(ud => ud.Activity_Services)
+                .HasForeignKey(ub => ub.Service_id);
         }
 
         public DbSet<Business> Businesses { get; set; }
@@ -75,6 +124,10 @@ namespace Universal_server.Data
         public DbSet<Inventory_business> Inventory_businesses { get; set; }
         public DbSet<Inventoy_images> Inventoy_images { get; set; }
         public DbSet<Service> Services { get; set; }
+        public DbSet<UsersBusinesses> UsersBusinesseses { get; set; }
+        public DbSet<Business_Service> Business_Services { get; set; }
+        public DbSet<Activity_Service> Activity_Services { get; set; }
+        public DbSet<Feature> Features { get; set; }
 
     }
 }

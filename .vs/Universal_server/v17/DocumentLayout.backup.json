@@ -3,8 +3,16 @@
   "WorkspaceRootPath": "C:\\Users\\Fouaad\\Desktop\\GitHub Projects\\universalAPI\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{D4942ED6-9D3A-4C6A-BDD0-17739CA06874}|Universal_server.csproj|c:\\users\\fouaad\\desktop\\github projects\\universalapi\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{D4942ED6-9D3A-4C6A-BDD0-17739CA06874}|Universal_server.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{D4942ED6-9D3A-4C6A-BDD0-17739CA06874}|Universal_server.csproj|c:\\users\\fouaad\\desktop\\github projects\\universalapi\\models\\service.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D4942ED6-9D3A-4C6A-BDD0-17739CA06874}|Universal_server.csproj|solutionrelative:models\\service.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D4942ED6-9D3A-4C6A-BDD0-17739CA06874}|Universal_server.csproj|c:\\users\\fouaad\\desktop\\github projects\\universalapi\\models\\business_servicess.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D4942ED6-9D3A-4C6A-BDD0-17739CA06874}|Universal_server.csproj|solutionrelative:models\\business_servicess.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D4942ED6-9D3A-4C6A-BDD0-17739CA06874}|Universal_server.csproj|c:\\users\\fouaad\\desktop\\github projects\\universalapi\\models\\business.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D4942ED6-9D3A-4C6A-BDD0-17739CA06874}|Universal_server.csproj|solutionrelative:models\\business.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{D4942ED6-9D3A-4C6A-BDD0-17739CA06874}|Universal_server.csproj|c:\\users\\fouaad\\desktop\\github projects\\universalapi\\controllers\\admin\\accountcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -23,27 +31,53 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "Program.cs",
-              "DocumentMoniker": "C:\\Users\\Fouaad\\Desktop\\GitHub Projects\\universalAPI\\Program.cs",
-              "RelativeDocumentMoniker": "Program.cs",
-              "ToolTip": "C:\\Users\\Fouaad\\Desktop\\GitHub Projects\\universalAPI\\Program.cs",
-              "RelativeToolTip": "Program.cs",
-              "ViewState": "AgIAAAYAAAAAAAAAAAAAABsAAAApAAAAAAAAAA==",
+              "Title": "Service.cs",
+              "DocumentMoniker": "C:\\Users\\Fouaad\\Desktop\\GitHub Projects\\universalAPI\\Models\\Service.cs",
+              "RelativeDocumentMoniker": "Models\\Service.cs",
+              "ToolTip": "C:\\Users\\Fouaad\\Desktop\\GitHub Projects\\universalAPI\\Models\\Service.cs",
+              "RelativeToolTip": "Models\\Service.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAAUAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-15T15:14:43.967Z",
+              "WhenOpened": "2025-12-21T19:32:27.693Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Business.cs",
+              "DocumentMoniker": "C:\\Users\\Fouaad\\Desktop\\GitHub Projects\\universalAPI\\Models\\Business.cs",
+              "RelativeDocumentMoniker": "Models\\Business.cs",
+              "ToolTip": "C:\\Users\\Fouaad\\Desktop\\GitHub Projects\\universalAPI\\Models\\Business.cs",
+              "RelativeToolTip": "Models\\Business.cs",
+              "ViewState": "AgIAABMAAAAAAAAAAAAkwCMAAAAkAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-21T19:31:31.988Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 1,
+              "Title": "Business_Servicess.cs",
+              "DocumentMoniker": "C:\\Users\\Fouaad\\Desktop\\GitHub Projects\\universalAPI\\Models\\Business_Servicess.cs",
+              "RelativeDocumentMoniker": "Models\\Business_Servicess.cs",
+              "ToolTip": "C:\\Users\\Fouaad\\Desktop\\GitHub Projects\\universalAPI\\Models\\Business_Servicess.cs*",
+              "RelativeToolTip": "Models\\Business_Servicess.cs*",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAuwA8AAAAWAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-21T19:31:24.378Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
               "Title": "AccountController.cs",
               "DocumentMoniker": "C:\\Users\\Fouaad\\Desktop\\GitHub Projects\\universalAPI\\Controllers\\Admin\\AccountController.cs",
               "RelativeDocumentMoniker": "Controllers\\Admin\\AccountController.cs",
               "ToolTip": "C:\\Users\\Fouaad\\Desktop\\GitHub Projects\\universalAPI\\Controllers\\Admin\\AccountController.cs",
               "RelativeToolTip": "Controllers\\Admin\\AccountController.cs",
-              "ViewState": "AgIAABYAAAAAAAAAAAAQwDcAAAAYAAAAAAAAAA==",
+              "ViewState": "AgIAAIsAAAAAAAAAAAAkwJcAAABRAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-15T14:56:42.629Z",
+              "WhenOpened": "2025-12-21T19:30:56.512Z",
               "EditorCaption": ""
             }
           ]

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace Universal_server.Models
 {
@@ -12,7 +13,7 @@ namespace Universal_server.Models
         public string State { get; set; }
         public string Post_code { get; set; }
         public string City { get; set; }
-
+        [JsonIgnore]
         public List<Business_Address>? BusinessAddresses { get; set; }
 
 

@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace Universal_server.Models
 {
@@ -27,11 +28,12 @@ namespace Universal_server.Models
         public string? Business_youtube { get; set; }
         public string? Business_whatsapp { get; set; }
         public string? Business_email { get; set; }
-
         public List<Activiity>? Activities { get; set; }
-
         public List<Business_BusinessType>? BusinessTypes { get; set; }
         public List<Business_Address>? BusinessAddresses { get; set; }
+        public List<UsersBusinesses>? UsersBusinesses { get; set; }
+
+        public List<Business_Service>? Business_Services { get; set; }
 
 
         public DateOnly Insert_on { get; set; }

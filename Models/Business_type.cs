@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace Universal_server.Models
 {
@@ -9,7 +10,7 @@ namespace Universal_server.Models
 
         [Required]
         public string Description { get; set; }
-
+        [JsonIgnore]
         public List<Business_BusinessType>? BusinessTypes { get; set; }
 
 

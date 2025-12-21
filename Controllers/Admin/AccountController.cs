@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Universal_server.Data;
 using Universal_server.Models;
 using Universal_server.Models.Helper_models;
 using Universal_server.Services;
@@ -13,12 +15,14 @@ namespace Universal_server.Controllers.Admin
     {
         private readonly UserManager<IdentityUserData> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
+        UniversalDbContext db;
         GenerateToken GenerateToken;
-        public AccountController(UserManager<IdentityUserData> userManager, RoleManager<IdentityRole> roleManager, GenerateToken generateToken)
+        public AccountController(UserManager<IdentityUserData> userManager, RoleManager<IdentityRole> roleManager, GenerateToken generateToken, UniversalDbContext db)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             GenerateToken = generateToken;
+            this.db = db;
         }
 
         [HttpPost("Register")]
@@ -43,7 +47,7 @@ namespace Universal_server.Controllers.Admin
             var token = GenerateToken.GenerateJwtToken(
                 user.Id,
                 user.Email,
-                "User"
+                ["User"]
             );
 
             return Ok(new
@@ -52,6 +56,82 @@ namespace Universal_server.Controllers.Admin
                 token = token
             });
         }
+
+        [HttpPost("AddUsers")]
+        public async Task<IActionResult> AddUsers([FromBody] RegisterUserModel model)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var existingUser = await _userManager.FindByNameAsync(model.UserName);
+            if (existingUser != null)
+                return BadRequest("Username already exists");
+
+            var user = new IdentityUserData
+            {
+                UserName = model.UserName,
+                Email = model.Email
+            };
+
+            string password = await GeneratePassword();
+
+            using var transaction = await db.Database.BeginTransactionAsync();
+
+            try
+            {
+                var result = await _userManager.CreateAsync(user, password);
+                if (!result.Succeeded)
+                    return BadRequest(result.Errors);
+
+                if (model.Roles?.Any() == true)
+                {
+                    foreach (var role in model.Roles)
+                    {
+                        if (await _roleManager.RoleExistsAsync(role))
+                        {
+                            await _userManager.AddToRoleAsync(user, role);
+                        }
+                    }
+                }
+
+                if (model.BusinessIds?.Any() == true)
+                {
+                    var validBusinessIds = await db.Businesses
+                        .Where(b => model.BusinessIds.Contains(b.Business_id))
+                        .Select(b => b.Business_id)
+                        .ToListAsync();
+
+                    foreach (var businessId in validBusinessIds)
+                    {
+                        await db.UsersBusinesseses.AddAsync(new UsersBusinesses
+                        {
+                            UserId = user.Id,
+                            Business_id = businessId
+                        });
+                    }
+
+                    await db.SaveChangesAsync();
+                }
+
+                await transaction.CommitAsync();
+
+                return Ok(new
+                {
+                    message = "User added successfully",
+                    password
+                });
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                return StatusCode(500, new
+                {
+                    message = "An error occurred while creating the user",
+                    error = ex.Message
+                });
+            }
+        }
+
 
         [HttpPost("Login")]
         public async Task<IActionResult> Login([FromBody] loginModel model)
@@ -68,18 +148,24 @@ namespace Universal_server.Controllers.Admin
                 return Unauthorized(new { message = "Invalid email or password" });
 
             var roles = await _userManager.GetRolesAsync(user);
-            var role = roles.FirstOrDefault() ?? "User"; 
+            var role = roles.FirstOrDefault() ?? "User";
+            var businesses = await db.Businesses.Include(b => b.Business_Services).ThenInclude(bs => bs.Service)
+                .Where(b => b.UsersBusinesses.Any(ub => ub.UserId == user.Id))
+                .ToListAsync();
+
 
             var token = GenerateToken.GenerateJwtToken(
                 user.Id,
                 user.Email,
-                role
+                roles.ToList()
             );
 
             return Ok(new
             {
                 message = "Login successful",
-                token = token
+                user = user,
+                token = token,
+                businesses = businesses
             });
         }
 
@@ -120,6 +206,35 @@ namespace Universal_server.Controllers.Admin
 
             return Ok($"User assigned to role successfully");
         }
+
+        [HttpGet("getAllRoles")]
+        public async Task<IActionResult> getAllRoles()
+        {
+           var roles = await _roleManager.Roles.ToListAsync();
+            return Ok(roles);
+        }
+
+        [HttpGet("getAllUsers")]
+        public async Task<IActionResult> getAllUsers()
+        {
+            var users = await _userManager.Users.ToListAsync();
+            return Ok(users);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> deleteUser(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            await _userManager.DeleteAsync(user);
+            return Ok(user);
+        }
+        private Task<string> GeneratePassword()
+        {
+            var random = new Random();
+            return Task.FromResult(random.Next(0, 100000).ToString("D5"));
+        }
+
+
 
 
 

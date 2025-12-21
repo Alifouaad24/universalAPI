@@ -40,5 +40,33 @@ namespace Universal_server.Controllers.Admin
             await db.SaveChangesAsync();
             return Ok(businessType);
         }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> EditBt(int id, [FromBody] BusinessTypeDto model)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            var bt = await db.Business_types.FindAsync(id);
+            if (bt == null) return BadRequest(ModelState);
+
+            bt.Description = model.Description;
+            await db.SaveChangesAsync();
+
+            return Ok(bt);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> deleteBusinessType(int id)
+        {
+            var bt = await db.Business_types.FindAsync(id);
+            if (bt == null) return BadRequest(ModelState);
+
+            bt.visible = false;
+            await db.SaveChangesAsync();
+            return Ok(new
+            {
+                msg = "deleted successfuly"
+            });
+        }
     }
 }

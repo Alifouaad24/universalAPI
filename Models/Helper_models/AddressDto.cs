@@ -9,9 +9,5 @@ namespace Universal_server.Models.Helper_models
         public string State { get; set; }
         public string Post_code { get; set; }
         public string City { get; set; }
-
-        public DateOnly Insert_on { get; set; }
-        public string? Insert_by { get; set; }
-        public bool visible { get; set; } = true;
     }
 }

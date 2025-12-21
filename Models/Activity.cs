@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace Universal_server.Models
 {
@@ -12,8 +13,10 @@ namespace Universal_server.Models
 
         [ForeignKey(nameof(business))]
         public int Business_id { get; set; }
+        [JsonIgnore]
         public Business? business { get; set; }
-        public List<Service>? Services { get; set; }
+        [JsonIgnore]
+        public List<Activity_Service>? Activity_Services { get; set; }
 
         public DateOnly Insert_on { get; set; }
         public string? Insert_by { get; set; }

@@ -21,7 +21,12 @@ namespace Universal_server.Controllers.Admin
         [HttpGet]
         public async Task<IActionResult> GetAllBusiness()
         {
-            var businesses = await db.Businesses.Where(b => b.visible == true).ToListAsync();
+            var businesses = await db.Businesses
+                .Include(b => b.Activities)
+                .Include(b => b.Country)
+                .Include(b => b.BusinessAddresses).ThenInclude(ba => ba.Address)
+                .Include(b => b.BusinessTypes).ThenInclude(ba => ba.BusinessType)
+                .Where(b => b.visible == true).ToListAsync();
             return Ok(businesses);
         }
 
@@ -29,6 +34,27 @@ namespace Universal_server.Controllers.Admin
         public async Task<IActionResult> AddBusiness([FromBody] BusinessDTO model)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            if (model.address != null &&
+               !string.IsNullOrWhiteSpace(model.address.Post_code) &&
+               !string.IsNullOrWhiteSpace(model.address.City) &&
+               !string.IsNullOrWhiteSpace(model.address.State) &&
+               !string.IsNullOrWhiteSpace(model.address.Line_2) &&
+               !string.IsNullOrWhiteSpace(model.address.Line_1))
+            {
+                var address = new Address
+                {
+                    Line_1 = model.address.Line_1,
+                    City = model.address.City,
+                    State = model.address.State,
+                    Line_2 = model.address.Line_2,
+                    Post_code = model.address.Post_code,
+                };
+
+                await db.Addresses.AddAsync(address);
+                await db.SaveChangesAsync();
+                model.AddressId!.Add(address.Address_id);
+            }
 
             var business = new Business
             {
@@ -41,6 +67,7 @@ namespace Universal_server.Controllers.Admin
                 Business_tiktok = model.Business_tiktok,
                 Business_google = model.Business_google,
                 Business_youtube = model.Business_youtube,
+                Is_active = model.Is_active,
                 Business_whatsapp = model.Business_whatsapp,
                 Business_email = model.Business_email,
                 Insert_by = "",

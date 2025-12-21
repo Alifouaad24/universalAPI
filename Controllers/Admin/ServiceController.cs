@@ -22,7 +22,18 @@ namespace Universal_server.Controllers.Admin
         [HttpGet]
         public async Task<IActionResult> GetAllServices() 
         {
-            var services = await db.Services.Where(b => b.visible == true).ToListAsync();
+            var services = await db.Services
+                .Include(b => b.Activity_Services).ThenInclude(aS => aS.Activiity)
+                .Where(b => b.visible == true).ToListAsync();
+            return Ok(services);
+        }
+
+        [HttpGet("GetAllServicesbus")]
+        public async Task<IActionResult> GetAllServicesbus()
+        {
+            var services = await db.Business_Services
+                .Include(b => b.Service)
+                .Where(b => b.Business.UsersBusinesses.Any(x => x.UserId == "9ed6b37b-1694-4478-9f0f-9a99163fd716")).ToListAsync();
             return Ok(services);
         }
 
@@ -34,12 +45,45 @@ namespace Universal_server.Controllers.Admin
             var service = new Service
             {
                 Description = model.Description,
-                Activity_id = model.Activity_id,
+                IsPublic = model.IsPublic,
                 Insert_by = "",
                 Insert_on = DateOnly.FromDateTime(DateTime.Now),
                 visible = true,
             };
+
             await db.Services.AddAsync(service);
+            await db.SaveChangesAsync();
+
+            if (model.BusinessesId.Count > 0)
+            {
+                var businesses = await db.Businesses.Where(b => model.BusinessesId.Contains(b.Business_id)).ToListAsync();
+                foreach (var bus in businesses) {
+                
+                    await db.Business_Services.AddAsync(new Business_Service
+                    {
+                        Business_id = bus.Business_id,
+                        Service_id = service.Service_id,
+                    });
+                }
+                await db.SaveChangesAsync();
+            }
+
+            if (model.ActivitiesId.Count > 0)
+            {
+                var activities = await db.Activiities.Where(a => model.ActivitiesId.Contains(a.Activity_id)).ToListAsync();
+                foreach (var act in activities)
+                {
+
+                    await db.Activity_Services.AddAsync(new Activity_Service
+                    {
+                        Activity_id = act.Activity_id,
+                        Service_id = service.Service_id,
+                    });
+                }
+                await db.SaveChangesAsync();
+            }
+
+
             await db.SaveChangesAsync();
             return Ok(service);
         }
@@ -51,7 +95,6 @@ namespace Universal_server.Controllers.Admin
             if (service == null) return NotFound();
 
             service.Description = model.Description;
-            service.Activity_id = model.Activity_id;
             service.Insert_by = "";
 
             await db.SaveChangesAsync();

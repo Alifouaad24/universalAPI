@@ -21,7 +21,10 @@ namespace Universal_server.Controllers.Admin
         [HttpGet]
         public async Task<IActionResult> GetAllAddresses()
         {
-            var addresses = await db.Addresses.Where(b => b.visible == true).ToListAsync();
+            var addresses = await db.Addresses
+                .Include(a => a.BusinessAddresses)
+                .ThenInclude(ba => ba.Business)
+                .Where(b => b.visible == true).ToListAsync();
             return Ok(addresses);
         }
 
@@ -64,7 +67,7 @@ namespace Universal_server.Controllers.Admin
 
         }
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAddress(int id)
         {
             var address = await db.Addresses.FindAsync(id);

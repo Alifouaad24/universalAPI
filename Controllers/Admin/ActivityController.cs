@@ -21,7 +21,10 @@ namespace Universal_server.Controllers.Admin
         [HttpGet]
         public async Task<IActionResult> getAllActivities()
         {
-            var activities = await db.Activiities.Where(b => b.visible == true).ToListAsync();
+            var activities = await db.Activiities
+                .Include(b => b.Activity_Services).ThenInclude(aS => aS.Service)
+                .Include(b => b.business)
+                .Where(b => b.visible == true).ToListAsync();
             return Ok(activities);
         }
 

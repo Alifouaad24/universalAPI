@@ -4,6 +4,8 @@
     {
 
         public string Description { get; set; }
-        public int? Activity_id { get; set; }
+        public bool IsPublic { get; set; }
+        public List<int>? BusinessesId { get; set; }
+        public List<int>? ActivitiesId { get; set; }
     }
 }

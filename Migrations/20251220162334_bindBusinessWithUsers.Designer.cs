@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Universal_server.Data;
 
@@ -11,9 +12,11 @@ using Universal_server.Data;
 namespace Universal_server.Migrations
 {
     [DbContext(typeof(UniversalDbContext))]
-    partial class UniversalDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251220162334_bindBusinessWithUsers")]
+    partial class bindBusinessWithUsers
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -186,21 +189,6 @@ namespace Universal_server.Migrations
                     b.ToTable("Activiities");
                 });
 
-            modelBuilder.Entity("Universal_server.Models.Activity_Service", b =>
-                {
-                    b.Property<int>("Activity_id")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Service_id")
-                        .HasColumnType("int");
-
-                    b.HasKey("Activity_id", "Service_id");
-
-                    b.HasIndex("Service_id");
-
-                    b.ToTable("Activity_Services");
-                });
-
             modelBuilder.Entity("Universal_server.Models.Address", b =>
                 {
                     b.Property<int>("Address_id")
@@ -358,21 +346,6 @@ namespace Universal_server.Migrations
                     b.ToTable("Business_BusinessTypes");
                 });
 
-            modelBuilder.Entity("Universal_server.Models.Business_Service", b =>
-                {
-                    b.Property<int>("Business_id")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Service_id")
-                        .HasColumnType("int");
-
-                    b.HasKey("Business_id", "Service_id");
-
-                    b.HasIndex("Service_id");
-
-                    b.ToTable("Business_Services");
-                });
-
             modelBuilder.Entity("Universal_server.Models.Business_type", b =>
                 {
                     b.Property<int>("Business_type_id")
@@ -455,28 +428,6 @@ namespace Universal_server.Migrations
                     b.HasKey("CountryId");
 
                     b.ToTable("Countries");
-                });
-
-            modelBuilder.Entity("Universal_server.Models.Feature", b =>
-                {
-                    b.Property<int>("FeatureId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FeatureId"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("Service_id")
-                        .HasColumnType("int");
-
-                    b.HasKey("FeatureId");
-
-                    b.HasIndex("Service_id");
-
-                    b.ToTable("Features");
                 });
 
             modelBuilder.Entity("Universal_server.Models.IdentityUserData", b =>
@@ -726,6 +677,9 @@ namespace Universal_server.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Service_id"));
 
+                    b.Property<int?>("Activity_id")
+                        .HasColumnType("int");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -736,15 +690,14 @@ namespace Universal_server.Migrations
                     b.Property<DateOnly>("Insert_on")
                         .HasColumnType("date");
 
-                    b.Property<bool>("IsPublic")
-                        .HasColumnType("bit");
-
                     b.Property<bool>("visible")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(true);
 
                     b.HasKey("Service_id");
+
+                    b.HasIndex("Activity_id");
 
                     b.ToTable("Services");
                 });
@@ -957,25 +910,6 @@ namespace Universal_server.Migrations
                     b.Navigation("business");
                 });
 
-            modelBuilder.Entity("Universal_server.Models.Activity_Service", b =>
-                {
-                    b.HasOne("Universal_server.Models.Activiity", "Activiity")
-                        .WithMany("Activity_Services")
-                        .HasForeignKey("Activity_id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Universal_server.Models.Service", "Service")
-                        .WithMany("Activity_Services")
-                        .HasForeignKey("Service_id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Activiity");
-
-                    b.Navigation("Service");
-                });
-
             modelBuilder.Entity("Universal_server.Models.Business", b =>
                 {
                     b.HasOne("Universal_server.Models.Country", "Country")
@@ -1023,34 +957,6 @@ namespace Universal_server.Migrations
                     b.Navigation("Business");
 
                     b.Navigation("BusinessType");
-                });
-
-            modelBuilder.Entity("Universal_server.Models.Business_Service", b =>
-                {
-                    b.HasOne("Universal_server.Models.Business", "Business")
-                        .WithMany("Business_Services")
-                        .HasForeignKey("Business_id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Universal_server.Models.Service", "Service")
-                        .WithMany("Business_Services")
-                        .HasForeignKey("Service_id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Business");
-
-                    b.Navigation("Service");
-                });
-
-            modelBuilder.Entity("Universal_server.Models.Feature", b =>
-                {
-                    b.HasOne("Universal_server.Models.Service", "Service")
-                        .WithMany()
-                        .HasForeignKey("Service_id");
-
-                    b.Navigation("Service");
                 });
 
             modelBuilder.Entity("Universal_server.Models.Inventory", b =>
@@ -1104,6 +1010,15 @@ namespace Universal_server.Migrations
                     b.Navigation("Inventory");
                 });
 
+            modelBuilder.Entity("Universal_server.Models.Service", b =>
+                {
+                    b.HasOne("Universal_server.Models.Activiity", "Activiity")
+                        .WithMany("Services")
+                        .HasForeignKey("Activity_id");
+
+                    b.Navigation("Activiity");
+                });
+
             modelBuilder.Entity("Universal_server.Models.Size", b =>
                 {
                     b.HasOne("Universal_server.Models.Category", "Category")
@@ -1143,7 +1058,7 @@ namespace Universal_server.Migrations
 
             modelBuilder.Entity("Universal_server.Models.Activiity", b =>
                 {
-                    b.Navigation("Activity_Services");
+                    b.Navigation("Services");
                 });
 
             modelBuilder.Entity("Universal_server.Models.Address", b =>
@@ -1158,8 +1073,6 @@ namespace Universal_server.Migrations
                     b.Navigation("BusinessAddresses");
 
                     b.Navigation("BusinessTypes");
-
-                    b.Navigation("Business_Services");
 
                     b.Navigation("UsersBusinesses");
                 });
@@ -1182,13 +1095,6 @@ namespace Universal_server.Migrations
             modelBuilder.Entity("Universal_server.Models.Inventory", b =>
                 {
                     b.Navigation("inventoy_Images");
-                });
-
-            modelBuilder.Entity("Universal_server.Models.Service", b =>
-                {
-                    b.Navigation("Activity_Services");
-
-                    b.Navigation("Business_Services");
                 });
 #pragma warning restore 612, 618
         }
