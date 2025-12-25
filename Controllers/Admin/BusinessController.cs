@@ -150,7 +150,7 @@ namespace Universal_server.Controllers.Admin
                         Description = ser.Description,
                         IsPublic = ser.IsPublic,
                         Service_icon = ser.Service_icon,
-                        Service_Route = $"Home/{ser.Description}"
+                        Service_Route = $"/Home/{ser.Description.ToLower()}"
                     };
                     await db.Services.AddAsync(service);
                     await db.SaveChangesAsync();

@@ -189,7 +189,10 @@ namespace Universal_server.Controllers.Admin
             if (!result.Succeeded)
                 return BadRequest(result.Errors);
 
-            return Ok($"Role '{roleName}' created successfully");
+            return Ok(new
+            {
+                msg = $"Role '{roleName}' created successfully"
+            });
         }
 
         [HttpPost("AssignRoleToUser")]
@@ -232,6 +235,26 @@ namespace Universal_server.Controllers.Admin
             await _userManager.DeleteAsync(user);
             return Ok(user);
         }
+
+        [HttpDelete("deleteRole/{id}")]
+        public async Task<IActionResult> deleteRole(string id)
+        {
+            var role = await _roleManager.FindByIdAsync(id);
+            await _roleManager.DeleteAsync(role);
+            return Ok(role);
+        }
+
+        [HttpPut("UpdateRole/{id}/{roleName}")]
+        public async Task<IActionResult> UpdateRole(string id, string roleName)
+        {
+            var role = await _roleManager.FindByIdAsync(id);
+            role.Name = roleName;
+            await _roleManager.UpdateAsync(role);
+            return Ok(role);
+        }
+
+
+
         private Task<string> GeneratePassword()
         {
             var random = new Random();
