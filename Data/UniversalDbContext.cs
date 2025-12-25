@@ -128,6 +128,9 @@ namespace Universal_server.Data
         public DbSet<Business_Service> Business_Services { get; set; }
         public DbSet<Activity_Service> Activity_Services { get; set; }
         public DbSet<Feature> Features { get; set; }
+        public DbSet<Area> Areas { get; set; }
+        public DbSet<City> Cities { get; set; }
+        public DbSet<State> States { get; set; }
 
     }
 }

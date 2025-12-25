@@ -12,9 +12,10 @@ namespace Universal_server.Models
         [Required]
         public string Business_name { get; set; }
 
+        public string? Business_LogoUrl { get; set; }
 
         [ForeignKey(nameof(Country))]
-        public int CountryId { get; set; }
+        public int? CountryId { get; set; }
         public Country? Country { get; set; }
 
         public bool Is_active { get; set; }

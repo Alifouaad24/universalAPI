@@ -46,6 +46,8 @@ namespace Universal_server.Controllers.Admin
             {
                 Description = model.Description,
                 IsPublic = model.IsPublic,
+                Service_icon = model.Service_icon,
+                Service_Route = $"Home/{model.Description}",
                 Insert_by = "",
                 Insert_on = DateOnly.FromDateTime(DateTime.Now),
                 visible = true,
@@ -95,6 +97,7 @@ namespace Universal_server.Controllers.Admin
             if (service == null) return NotFound();
 
             service.Description = model.Description;
+            service.Service_icon = model.Service_icon;
             service.Insert_by = "";
 
             await db.SaveChangesAsync();

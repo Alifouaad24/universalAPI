@@ -12,6 +12,12 @@ namespace Universal_server.Models
         [JsonIgnore]
         public List<Business>? Businesses { get; set; }
 
+        [JsonIgnore]
+        public List<City>? Cities { get; set; }
+
+        [JsonIgnore]
+        public List<State>? States { get; set; }
+
 
         public DateOnly Insert_on { get; set; }
         public string? Insert_by { get; set; }

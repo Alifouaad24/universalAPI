@@ -10,7 +10,6 @@ namespace Universal_server.Models
         public Business Business { get; set; }
 
         public int Business_type_id { get; set; }
-        [JsonIgnore]
         public Business_type BusinessType { get; set; }
 
 

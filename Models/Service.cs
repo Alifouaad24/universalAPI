@@ -10,6 +10,8 @@ namespace Universal_server.Models
         public int Service_id { get; set; }
         [Required]
         public string Description { get; set; }
+        public string Service_icon { get; set; }
+        public string Service_Route { get; set; }
 
         public bool IsPublic { get; set; } 
         public List<Activity_Service>? Activity_Services { get; set; }

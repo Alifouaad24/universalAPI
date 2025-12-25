@@ -8,6 +8,7 @@ namespace Universal_server.Models.Helper_models
         public string Business_name { get; set; }
         public int CountryId { get; set; }
         public bool Is_active { get; set; }
+        public IFormFile? BusinessLogo { get; set; }
         public string? Business_phone { get; set; }
         public string? Business_webSite { get; set; }
         public string? Business_fb { get; set; }
@@ -21,7 +22,7 @@ namespace Universal_server.Models.Helper_models
         public List<int>? BusinessTypeId { get; set; }
         public List<int>? AddressId { get; set; }
 
-        public AddressDto? address { get; set; }
+        public List<AddressDto>? address { get; set; }
 
         public List<ServiceDto>? Services { get; set; }
 

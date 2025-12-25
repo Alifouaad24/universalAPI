@@ -83,6 +83,9 @@ namespace Universal_server.Controllers.Admin
                 if (!result.Succeeded)
                     return BadRequest(result.Errors);
 
+                user.UserPassword = password;
+                await _userManager.UpdateAsync(user);
+
                 if (model.Roles?.Any() == true)
                 {
                     foreach (var role in model.Roles)
@@ -150,12 +153,13 @@ namespace Universal_server.Controllers.Admin
             var roles = await _userManager.GetRolesAsync(user);
             var role = roles.FirstOrDefault() ?? "User";
             var businesses = await db.Businesses.Include(b => b.Business_Services).ThenInclude(bs => bs.Service)
+                 .Include(b => b.BusinessTypes).ThenInclude(bbt => bbt.BusinessType)
                 .Where(b => b.UsersBusinesses.Any(ub => ub.UserId == user.Id))
                 .ToListAsync();
 
 
             var token = GenerateToken.GenerateJwtToken(
-                user.Id,
+                user.Id,    
                 user.Email,
                 roles.ToList()
             );

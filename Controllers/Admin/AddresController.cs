@@ -37,9 +37,12 @@ namespace Universal_server.Controllers.Admin
             {
                 Line_1 = model.Line_1,
                 Line_2 = model.Line_2,
-                State = model.State,
+                StateId = model.StateId,
                 Post_code = model.Post_code,
-                City = model.City,
+                CityId = model.CityId,
+                AreaId = model.AreaId,
+                CountryId = model.CountryId,
+                Land_Mark = model.LandMark,
                 Insert_on = DateOnly.FromDateTime(DateTime.Now),
                 visible = true,
                 Insert_by = ""
@@ -58,10 +61,15 @@ namespace Universal_server.Controllers.Admin
 
             address.Line_1 = model.Line_1;
             address.Line_2 = model.Line_2;
-            address.State = model.State;
+            address.StateId = model.StateId;
             address.Post_code = model.Post_code;
-            address.City = model.City;
-
+            address.CityId = model.CityId;
+            address.AreaId = model.AreaId;
+            address.CountryId = model.CountryId;
+            address.Land_Mark = model.LandMark;
+            address.Insert_on = DateOnly.FromDateTime(DateTime.Now);
+            address.visible = true;
+            address.Insert_by = "";
             await db.SaveChangesAsync();
             return Ok(address);
 

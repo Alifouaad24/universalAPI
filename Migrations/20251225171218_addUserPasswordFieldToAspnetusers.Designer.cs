@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Universal_server.Data;
 
@@ -11,9 +12,11 @@ using Universal_server.Data;
 namespace Universal_server.Migrations
 {
     [DbContext(typeof(UniversalDbContext))]
-    partial class UniversalDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251225171218_addUserPasswordFieldToAspnetusers")]
+    partial class addUserPasswordFieldToAspnetusers
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Universal_server.Data;
 
@@ -11,9 +12,11 @@ using Universal_server.Data;
 namespace Universal_server.Migrations
 {
     [DbContext(typeof(UniversalDbContext))]
-    partial class UniversalDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251222082150_addService_RouteAnd2Fields")]
+    partial class addService_RouteAnd2Fields
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -209,14 +212,9 @@ namespace Universal_server.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Address_id"));
 
-                    b.Property<int?>("AreaId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("CityId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("CountryId")
-                        .HasColumnType("int");
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Insert_by")
                         .HasColumnType("nvarchar(max)");
@@ -224,65 +222,28 @@ namespace Universal_server.Migrations
                     b.Property<DateOnly>("Insert_on")
                         .HasColumnType("date");
 
-                    b.Property<string>("Land_Mark")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Line_1")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Line_2")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Post_code")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("StateId")
-                        .HasColumnType("int");
+                    b.Property<string>("State")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("visible")
                         .HasColumnType("bit");
 
                     b.HasKey("Address_id");
 
-                    b.HasIndex("AreaId");
-
-                    b.HasIndex("CityId");
-
-                    b.HasIndex("CountryId");
-
-                    b.HasIndex("StateId");
-
                     b.ToTable("Addresses");
-                });
-
-            modelBuilder.Entity("Universal_server.Models.Area", b =>
-                {
-                    b.Property<int>("AreaId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AreaId"));
-
-                    b.Property<int?>("CityId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("Sector")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("Spec")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("Zone")
-                        .HasColumnType("int");
-
-                    b.HasKey("AreaId");
-
-                    b.HasIndex("CityId");
-
-                    b.ToTable("Areas");
                 });
 
             modelBuilder.Entity("Universal_server.Models.Business", b =>
@@ -327,7 +288,7 @@ namespace Universal_server.Migrations
                     b.Property<string>("Business_youtube")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("CountryId")
+                    b.Property<int>("CountryId")
                         .HasColumnType("int");
 
                     b.Property<string>("Insert_by")
@@ -474,30 +435,6 @@ namespace Universal_server.Migrations
                     b.ToTable("Categories");
                 });
 
-            modelBuilder.Entity("Universal_server.Models.City", b =>
-                {
-                    b.Property<int>("CityId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CityId"));
-
-                    b.Property<int?>("CountryId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("IsNorth")
-                        .HasColumnType("int");
-
-                    b.HasKey("CityId");
-
-                    b.HasIndex("CountryId");
-
-                    b.ToTable("Cities");
-                });
-
             modelBuilder.Entity("Universal_server.Models.Country", b =>
                 {
                     b.Property<int>("CountryId")
@@ -534,21 +471,12 @@ namespace Universal_server.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FeatureId"));
 
-                    b.Property<string>("Insert_by")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateOnly>("Insert_on")
-                        .HasColumnType("date");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("Service_id")
                         .HasColumnType("int");
-
-                    b.Property<bool>("visible")
-                        .HasColumnType("bit");
 
                     b.HasKey("FeatureId");
 
@@ -608,9 +536,6 @@ namespace Universal_server.Migrations
                     b.Property<string>("UserName")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("UserPassword")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserPhoto")
                         .HasColumnType("nvarchar(max)");
@@ -871,28 +796,6 @@ namespace Universal_server.Migrations
                     b.ToTable("Sizes");
                 });
 
-            modelBuilder.Entity("Universal_server.Models.State", b =>
-                {
-                    b.Property<int>("StateId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("StateId"));
-
-                    b.Property<int>("CountryId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("StateId");
-
-                    b.HasIndex("CountryId");
-
-                    b.ToTable("States");
-                });
-
             modelBuilder.Entity("Universal_server.Models.System_gateway", b =>
                 {
                     b.Property<int>("System_gateway_id")
@@ -1087,47 +990,13 @@ namespace Universal_server.Migrations
                     b.Navigation("Service");
                 });
 
-            modelBuilder.Entity("Universal_server.Models.Address", b =>
-                {
-                    b.HasOne("Universal_server.Models.Area", "Area")
-                        .WithMany()
-                        .HasForeignKey("AreaId");
-
-                    b.HasOne("Universal_server.Models.City", "City")
-                        .WithMany()
-                        .HasForeignKey("CityId");
-
-                    b.HasOne("Universal_server.Models.Country", "Country")
-                        .WithMany()
-                        .HasForeignKey("CountryId");
-
-                    b.HasOne("Universal_server.Models.State", "State")
-                        .WithMany()
-                        .HasForeignKey("StateId");
-
-                    b.Navigation("Area");
-
-                    b.Navigation("City");
-
-                    b.Navigation("Country");
-
-                    b.Navigation("State");
-                });
-
-            modelBuilder.Entity("Universal_server.Models.Area", b =>
-                {
-                    b.HasOne("Universal_server.Models.City", "City")
-                        .WithMany("Areas")
-                        .HasForeignKey("CityId");
-
-                    b.Navigation("City");
-                });
-
             modelBuilder.Entity("Universal_server.Models.Business", b =>
                 {
                     b.HasOne("Universal_server.Models.Country", "Country")
                         .WithMany("Businesses")
-                        .HasForeignKey("CountryId");
+                        .HasForeignKey("CountryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Country");
                 });
@@ -1187,15 +1056,6 @@ namespace Universal_server.Migrations
                     b.Navigation("Business");
 
                     b.Navigation("Service");
-                });
-
-            modelBuilder.Entity("Universal_server.Models.City", b =>
-                {
-                    b.HasOne("Universal_server.Models.Country", "Country")
-                        .WithMany("Cities")
-                        .HasForeignKey("CountryId");
-
-                    b.Navigation("Country");
                 });
 
             modelBuilder.Entity("Universal_server.Models.Feature", b =>
@@ -1267,17 +1127,6 @@ namespace Universal_server.Migrations
                     b.Navigation("Category");
                 });
 
-            modelBuilder.Entity("Universal_server.Models.State", b =>
-                {
-                    b.HasOne("Universal_server.Models.Country", "Country")
-                        .WithMany("States")
-                        .HasForeignKey("CountryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Country");
-                });
-
             modelBuilder.Entity("Universal_server.Models.System_sectore_details", b =>
                 {
                     b.HasOne("Universal_server.Models.System_sectore", "system_Sectore")
@@ -1334,18 +1183,9 @@ namespace Universal_server.Migrations
                     b.Navigation("BusinessTypes");
                 });
 
-            modelBuilder.Entity("Universal_server.Models.City", b =>
-                {
-                    b.Navigation("Areas");
-                });
-
             modelBuilder.Entity("Universal_server.Models.Country", b =>
                 {
                     b.Navigation("Businesses");
-
-                    b.Navigation("Cities");
-
-                    b.Navigation("States");
                 });
 
             modelBuilder.Entity("Universal_server.Models.IdentityUserData", b =>

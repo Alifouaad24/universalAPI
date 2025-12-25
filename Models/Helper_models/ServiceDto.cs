@@ -7,5 +7,6 @@
         public bool IsPublic { get; set; }
         public List<int>? BusinessesId { get; set; }
         public List<int>? ActivitiesId { get; set; }
+        public string? Service_icon { get; set; }
     }
 }

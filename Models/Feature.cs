@@ -12,5 +12,9 @@ namespace Universal_server.Models
         [ForeignKey(nameof(Service))]
         public int? Service_id {  get; set; }
         public Service? Service { get; set; }
+
+        public DateOnly Insert_on { get; set; }
+        public string? Insert_by { get; set; }
+        public bool visible { get; set; } = true;
     }
 }
