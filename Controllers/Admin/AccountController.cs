@@ -141,7 +141,7 @@ namespace Universal_server.Controllers.Admin
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var existingUser = await _userManager.FindByNameAsync(id);
+            var existingUser = await _userManager.FindByIdAsync(id);
             if (existingUser == null)
                 return NotFound();
 
@@ -216,6 +216,7 @@ namespace Universal_server.Controllers.Admin
             var role = roles.FirstOrDefault() ?? "User";
             var businesses = await db.Businesses.Include(b => b.Business_Services).ThenInclude(bs => bs.Service)
                  .Include(b => b.BusinessTypes).ThenInclude(bbt => bbt.BusinessType)
+                 .Include(b => b.Activities)
                 .Where(b => b.UsersBusinesses.Any(ub => ub.UserId == user.Id))
                 .ToListAsync();
 
