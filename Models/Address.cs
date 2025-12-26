@@ -17,6 +17,7 @@ namespace Universal_server.Models
         public State? State { get; set; }
 
         public string? Post_code { get; set; }
+        public string? Us_City { get; set; }
         public string? Land_Mark { get; set; }
 
         [ForeignKey(nameof(City))]

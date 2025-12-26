@@ -135,6 +135,68 @@ namespace Universal_server.Controllers.Admin
             }
         }
 
+        [HttpPut("updateUser/{id}")]
+        public async Task<IActionResult> updateUser(string id, [FromBody] RegisterUserModel model)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var existingUser = await _userManager.FindByNameAsync(id);
+            if (existingUser == null)
+                return NotFound();
+
+            var userRoles = await _userManager.GetRolesAsync(existingUser);
+
+            if (userRoles.Any())
+            {
+                await _userManager.RemoveFromRolesAsync(existingUser, userRoles);
+            }
+
+            var userBuss = await db.UsersBusinesseses.Where(ub => ub.UserId == existingUser.Id).ToListAsync();
+            if (userBuss.Any())
+            {
+                db.UsersBusinesseses.RemoveRange(userBuss);
+                await db.SaveChangesAsync();
+            }
+
+
+            if (model.Roles?.Any() == true)
+            {
+                foreach (var role in model.Roles)
+                {
+                    if (await _roleManager.RoleExistsAsync(role))
+                    {
+                        await _userManager.AddToRoleAsync(existingUser, role);
+                    }
+                }
+            }
+
+            if (model.BusinessIds?.Any() == true)
+            {
+                var validBusinessIds = await db.Businesses
+                    .Where(b => model.BusinessIds.Contains(b.Business_id))
+                    .Select(b => b.Business_id)
+                    .ToListAsync();
+
+                foreach (var businessId in validBusinessIds)
+                {
+                    await db.UsersBusinesseses.AddAsync(new UsersBusinesses
+                    {
+                        UserId = existingUser.Id,
+                        Business_id = businessId
+                    });
+                }
+
+                await db.SaveChangesAsync();
+            }
+
+
+            return Ok(new
+            {
+                UserId = existingUser.Id,
+            });
+        }
+
 
         [HttpPost("Login")]
         public async Task<IActionResult> Login([FromBody] loginModel model)
@@ -224,9 +286,31 @@ namespace Universal_server.Controllers.Admin
         [HttpGet("getAllUsers")]
         public async Task<IActionResult> getAllUsers()
         {
-            var users = await _userManager.Users.ToListAsync();
-            return Ok(users);
+            var users = await _userManager.Users.Include(u => u.UsersBusinesses).ThenInclude(ub => ub.Business).ToListAsync();
+
+            var result = new List<object>();
+
+            foreach (var user in users)
+            {
+                var roles = await _userManager.GetRolesAsync(user);
+
+                result.Add(new
+                {
+                    user.Id,
+                    user.UserName,
+                    user.Email,
+                    Roles = roles,
+                    Businesses = user.UsersBusinesses.Select(ub => new
+                    {
+                        ub.Business.Business_id,
+                        ub.Business.Business_name
+                    })
+                });
+            }
+
+            return Ok(result);
         }
+
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> deleteUser(string id)

@@ -106,6 +106,7 @@ namespace Universal_server.Controllers.Admin
                         AreaId = addressDto.AreaId,
                         CountryId = addressDto.CountryId,
                         Land_Mark = addressDto.LandMark,
+                        Us_City = addressDto.Us_City,
                         Insert_on = DateOnly.FromDateTime(DateTime.Now),
                         visible = true,
                         Insert_by = ""
