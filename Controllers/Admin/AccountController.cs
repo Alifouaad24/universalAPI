@@ -216,6 +216,7 @@ namespace Universal_server.Controllers.Admin
             var role = roles.FirstOrDefault() ?? "User";
             var businesses = await db.Businesses.Include(b => b.Business_Services).ThenInclude(bs => bs.Service)
                  .Include(b => b.BusinessTypes).ThenInclude(bbt => bbt.BusinessType)
+                 .Include(b => b.BusinessAddresses).ThenInclude(ba => ba.Address)
                  .Include(b => b.Activities)
                 .Where(b => b.UsersBusinesses.Any(ub => ub.UserId == user.Id))
                 .ToListAsync();

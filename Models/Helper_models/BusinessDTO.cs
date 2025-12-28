@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace Universal_server.Models.Helper_models
 {
@@ -19,11 +20,16 @@ namespace Universal_server.Models.Helper_models
         public string? Business_whatsapp { get; set; }
         public string? Business_email { get; set; }
 
+        [BindNever]
         public List<int>? BusinessTypeId { get; set; }
+
+        [BindNever]
         public List<int>? AddressId { get; set; }
 
+        [BindNever]
         public List<AddressDto>? address { get; set; }
 
+        [BindNever]
         public List<ServiceDto>? Services { get; set; }
 
     }

@@ -15,7 +15,6 @@ namespace Universal_server.Models
 
         public bool IsPublic { get; set; } 
         public List<Activity_Service>? Activity_Services { get; set; }
-        [JsonIgnore]
         public List<Business_Service>? Business_Services { get; set; }
 
         public DateOnly Insert_on { get; set; }

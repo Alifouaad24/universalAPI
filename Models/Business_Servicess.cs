@@ -12,7 +12,7 @@ namespace Universal_server.Models
 
         [ForeignKey(nameof(Service))]
         public int Service_id { get; set; }
-        
+        [JsonIgnore]
         public Service? Service { get; set; }
 
     }

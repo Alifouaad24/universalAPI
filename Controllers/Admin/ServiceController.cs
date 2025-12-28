@@ -24,6 +24,7 @@ namespace Universal_server.Controllers.Admin
         {
             var services = await db.Services
                 .Include(b => b.Activity_Services).ThenInclude(aS => aS.Activiity)
+                .Include(s => s.Business_Services).ThenInclude(bs => bs.Business)
                 .Where(b => b.visible == true).ToListAsync();
             return Ok(services);
         }
@@ -95,6 +96,52 @@ namespace Universal_server.Controllers.Admin
         {
             var service = await db.Services.FindAsync(id);
             if (service == null) return NotFound();
+
+
+            var busServs = await db.Business_Services.Where(bs => bs.Service_id == service.Service_id).ToListAsync();
+            if (busServs.Count > 0) 
+            { 
+                db.Business_Services.RemoveRange(busServs);
+                await db.SaveChangesAsync();
+            }
+
+            var ActServs = await db.Activity_Services.Where(bs => bs.Service_id == service.Service_id).ToListAsync();
+            if (busServs.Count > 0)
+            {
+                db.Activity_Services.RemoveRange(ActServs);
+                await db.SaveChangesAsync();
+            }
+
+
+            if (model.BusinessesId.Count > 0)
+            {
+                var businesses = await db.Businesses.Where(b => model.BusinessesId.Contains(b.Business_id)).ToListAsync();
+                foreach (var bus in businesses)
+                {
+
+                    await db.Business_Services.AddAsync(new Business_Service
+                    {
+                        Business_id = bus.Business_id,
+                        Service_id = service.Service_id,
+                    });
+                }
+                await db.SaveChangesAsync();
+            }
+
+            if (model.ActivitiesId.Count > 0)
+            {
+                var activities = await db.Activiities.Where(a => model.ActivitiesId.Contains(a.Activity_id)).ToListAsync();
+                foreach (var act in activities)
+                {
+
+                    await db.Activity_Services.AddAsync(new Activity_Service
+                    {
+                        Activity_id = act.Activity_id,
+                        Service_id = service.Service_id,
+                    });
+                }
+                await db.SaveChangesAsync();
+            }
 
             service.Description = model.Description;
             service.Service_icon = model.Service_icon;
