@@ -7,6 +7,6 @@ namespace Universal_server.Models.Helper_models
     {
 
         public string Description { get; set; }
-        public int Business_id { get; set; }
+        public List<int>? Business_ids { get; set; }
     }
 }

@@ -10,11 +10,8 @@ namespace Universal_server.Models
         public int Activity_id { get; set; }
         [Required]  
         public string Description { get; set; }
-
-        [ForeignKey(nameof(business))]
-        public int Business_id { get; set; }
         [JsonIgnore]
-        public Business? business { get; set; }
+        public List<Business_Activitiy>? Business_Activitiy { get; set; }
         [JsonIgnore]
         public List<Activity_Service>? Activity_Services { get; set; }
 

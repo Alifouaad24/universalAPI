@@ -7,7 +7,6 @@ namespace Universal_server.Models
     {
         [ForeignKey(nameof(UserData))]
         public string UserId { get; set; }
-        [JsonIgnore]
         public IdentityUserData? UserData { get; set; }
 
 

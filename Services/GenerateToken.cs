@@ -40,7 +40,7 @@ namespace Universal_server.Services
                 issuer: _configuration["Jwt:Issuer"],
                 audience: _configuration["Jwt:Audience"],
                 claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(
+                expires: DateTime.UtcNow.AddDays(
                     double.Parse(_configuration["Jwt:DurationInMinutes"])
                 ),
                 signingCredentials: creds

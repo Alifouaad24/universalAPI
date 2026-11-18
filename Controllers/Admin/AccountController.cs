@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Universal_server.Data;
 using Universal_server.Models;
 using Universal_server.Models.Helper_models;
@@ -17,12 +19,37 @@ namespace Universal_server.Controllers.Admin
         private readonly RoleManager<IdentityRole> _roleManager;
         UniversalDbContext db;
         GenerateToken GenerateToken;
+
         public AccountController(UserManager<IdentityUserData> userManager, RoleManager<IdentityRole> roleManager, GenerateToken generateToken, UniversalDbContext db)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             GenerateToken = generateToken;
             this.db = db;
+        }
+
+        [HttpGet("GetMyData")]
+        [Authorize]
+        public async Task<IActionResult> GetMyData()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+                return Unauthorized();
+
+            var businesses = await db.Businesses.Include(b => b.Business_Services).ThenInclude(bs => bs.Service)
+                .Include(b => b.BusinessTypes).ThenInclude(bbt => bbt.BusinessType)
+                .Include(b => b.BusinessAddresses).ThenInclude(ba => ba.Address)
+                //.Include(b => b.Activities)
+                .Where(b => b.visible == true)
+               .Where(b => b.UsersBusinesses.Any(ub => ub.UserId == user.Id))
+               .ToListAsync();
+
+            return Ok(new
+            {
+                email = user.Email,
+                userName = user.UserName,
+                businesses = businesses,
+            });
         }
 
         [HttpPost("Register")]
@@ -34,7 +61,8 @@ namespace Universal_server.Controllers.Admin
             var user = new IdentityUserData
             {
                 UserName = model.UserName,
-                Email = model.Email
+                Email = model.Email,
+                UserPassword = model.Password,
             };
 
             var result = await _userManager.CreateAsync(user, model.Password);
@@ -73,7 +101,7 @@ namespace Universal_server.Controllers.Admin
                 Email = model.Email
             };
 
-            string password = await GeneratePassword();
+            string password = await GenerateRandomPassword.GeneratePassword();
 
             using var transaction = await db.Database.BeginTransactionAsync();
 
@@ -197,6 +225,41 @@ namespace Universal_server.Controllers.Admin
             });
         }
 
+        [HttpPut("updateUserRoles/{id}")]
+        public async Task<IActionResult> updateUserRoles(string id, [FromBody] RegisterUserModel2 model)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var existingUser = await _userManager.FindByIdAsync(id);
+            if (existingUser == null)
+                return NotFound();
+
+            var userRoles = await _userManager.GetRolesAsync(existingUser);
+
+            if (userRoles.Any())
+            {
+                await _userManager.RemoveFromRolesAsync(existingUser, userRoles);
+            }
+
+ 
+            if (model.Roles?.Any() == true)
+            {
+                foreach (var role in model.Roles)
+                {
+                    if (await _roleManager.RoleExistsAsync(role))
+                    {
+                        await _userManager.AddToRoleAsync(existingUser, role);
+                    }
+                }
+            }
+
+            return Ok(new
+            {
+                UserId = existingUser.Id,
+            });
+        }
+
 
         [HttpPost("Login")]
         public async Task<IActionResult> Login([FromBody] loginModel model)
@@ -217,13 +280,14 @@ namespace Universal_server.Controllers.Admin
             var businesses = await db.Businesses.Include(b => b.Business_Services).ThenInclude(bs => bs.Service)
                  .Include(b => b.BusinessTypes).ThenInclude(bbt => bbt.BusinessType)
                  .Include(b => b.BusinessAddresses).ThenInclude(ba => ba.Address)
-                 .Include(b => b.Activities)
+                 .Include(b => b.Business_Activitiy).ThenInclude(ba => ba.Activiity)
+                 .Where(b => b.visible == true)
                 .Where(b => b.UsersBusinesses.Any(ub => ub.UserId == user.Id))
                 .ToListAsync();
 
 
             var token = GenerateToken.GenerateJwtToken(
-                user.Id,    
+                user.Id,
                 user.Email,
                 roles.ToList()
             );
@@ -281,14 +345,29 @@ namespace Universal_server.Controllers.Admin
         [HttpGet("getAllRoles")]
         public async Task<IActionResult> getAllRoles()
         {
-           var roles = await _roleManager.Roles.ToListAsync();
+            var roles = await _roleManager.Roles.ToListAsync();
             return Ok(roles);
         }
 
-        [HttpGet("getAllUsers")]
-        public async Task<IActionResult> getAllUsers()
+        [HttpGet("getAllUsers/{businessId}")]
+        public async Task<IActionResult> GetAllUsers(int businessId)
         {
-            var users = await _userManager.Users.Include(u => u.UsersBusinesses).ThenInclude(ub => ub.Business).ToListAsync();
+            var business = await db.Businesses.FindAsync(businessId);
+
+            if (business == null)
+            {
+                return NotFound($"Business with ID {businessId} was not found.");
+            }
+
+            var usersQuery = _userManager.Users.Include(u => u.UsersBusinesses).ThenInclude(ub => ub.Business).AsQueryable();
+
+            if (!string.IsNullOrEmpty(business.Role) &&
+                !business.Role.Contains("Manager"))
+            {
+                usersQuery = usersQuery.Where(u => u.UsersBusinesses.Any(ub => ub.Business_id == businessId));
+            }
+
+            var users = await usersQuery.ToListAsync();
 
             var result = new List<object>();
 
@@ -301,7 +380,9 @@ namespace Universal_server.Controllers.Admin
                     user.Id,
                     user.UserName,
                     user.Email,
+                    user.UserPassword,
                     Roles = roles,
+
                     Businesses = user.UsersBusinesses.Select(ub => new
                     {
                         ub.Business.Business_id,
@@ -311,6 +392,38 @@ namespace Universal_server.Controllers.Admin
             }
 
             return Ok(result);
+        }
+
+        [HttpPut("{userId}")]
+        public async Task<IActionResult> UpdateUserPassword(string userId, PasswordRequers model)
+        {
+
+            string finalPassword = string.Empty;
+
+            var user = await _userManager.FindByIdAsync(userId);
+
+            if (user == null) return BadRequest("User not found");
+
+            await _userManager.RemovePasswordAsync(user);
+
+            var result = await _userManager.AddPasswordAsync(user, model.newPasswor);
+            if (result.Succeeded)
+            {
+                user.UserPassword = model.newPasswor;
+            }
+
+            else
+            {
+                user.UserPassword = user.UserPassword;
+            }
+
+            finalPassword = user.UserPassword;
+            await db.SaveChangesAsync();
+
+            return Ok(new
+            {
+                currentPassword = finalPassword,
+            });
         }
 
 
@@ -338,19 +451,15 @@ namespace Universal_server.Controllers.Admin
             await _roleManager.UpdateAsync(role);
             return Ok(role);
         }
-
-
-
-        private Task<string> GeneratePassword()
-        {
-            var random = new Random();
-            return Task.FromResult(random.Next(0, 100000).ToString("D5"));
-        }
-
-
-
-
-
-
     }
+}
+
+public class PasswordRequers
+{
+    public string newPasswor { get; set; }
+}
+
+public class RegisterUserModel2
+{
+    public List<string> Roles { get; set; }
 }

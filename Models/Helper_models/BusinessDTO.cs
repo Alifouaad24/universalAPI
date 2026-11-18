@@ -32,5 +32,8 @@ namespace Universal_server.Models.Helper_models
         [BindNever]
         public List<ServiceDto>? Services { get; set; }
 
+        public int? ProviderBusiness { get; set; }
+        public bool SetItConsumer { get; set; } = false;
+
     }
 }

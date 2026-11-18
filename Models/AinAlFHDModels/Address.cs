@@ -1,0 +1,20 @@
+﻿using System.Text.Json.Serialization;
+
+namespace AinAlfahd.Models
+{
+    public class AddressAin   
+    {
+        public int Id { get; set; }
+        public int Area { get; set; }
+        public int City { get; set; }
+        public string LandMark { get; set; }
+        public bool IsDefault { get; set; }
+        public bool IsDeleted { get; set; }
+        public DateTime InsertDate { get; set; }
+
+
+        [JsonIgnore]
+        public Customer Customers { get; set; }
+        public int CustomerId { get; set; }
+    }
+}

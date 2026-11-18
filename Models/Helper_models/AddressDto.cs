@@ -9,7 +9,8 @@ namespace Universal_server.Models.Helper_models
         public string? Us_City { get; set; }
         public string? LandMark { get; set; }
         public string? Post_code { get; set; }
-
+        public string? LognTute { get; set; }
+        public string? LatTute { get; set; }
 
         public int? StateId { get; set; }
         public int? CityId { get; set; }
