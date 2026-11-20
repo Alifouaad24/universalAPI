@@ -1,15 +1,18 @@
-﻿using System.Net;
+﻿using System.Linq;
+using System.Net;
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Universal_server.Data;
 using Universal_server.Models;
 using Universal_server.Models.Helper_models;
+using Universal_server.Services;
 
 namespace Universal_server.Controllers.Admin
 {
@@ -22,13 +25,17 @@ namespace Universal_server.Controllers.Admin
         private readonly string apiKey;
         private readonly string apiSecret;
         IConfiguration configuration;
-        public BusinessController(UniversalDbContext db, IConfiguration configuration)
+        private readonly UserManager<IdentityUserData> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
+        public BusinessController(UniversalDbContext db, IConfiguration configuration, UserManager<IdentityUserData> userManager, RoleManager<IdentityRole> roleManager)
         {
             this.db = db;
             cloudName = configuration!["Claoudinary:cloudName"]!;
             apiKey = configuration["Claoudinary:apiKey"]!;
             apiSecret = configuration["Claoudinary:apiSecret"]!;
             this.configuration = configuration;
+            _userManager = userManager;
+            _roleManager = roleManager;
         }
 
 
@@ -36,10 +43,35 @@ namespace Universal_server.Controllers.Admin
         public async Task<IActionResult> GetAllBusiness()
         {
             var businesses = await db.Businesses.Include(b => b.Country)
-                .Include(b => b.Activities).Include(b => b.Business_Services).ThenInclude(bs => bs.Service)
+                .Include(b => b.Business_Services).ThenInclude(bs => bs.Service)
                 .Include(b => b.BusinessAddresses).ThenInclude(ba => ba.Address)
+                .Include(b => b.Buseness_Customers).ThenInclude(bc => bc.GlobalCustomer)
+                .Include(b => b.Business_Activitiy).ThenInclude(bc => bc.Activiity)
                 .Include(b => b.BusinessTypes).ThenInclude(ba => ba.BusinessType)
+                .Include(b => b.ProviderBusinessRelations)
+                .Include(b => b.ConsumerBusinessRelations)
+                .Include(b => b.UsersBusinesses).ThenInclude(ub => ub.UserData)
+                .Include(b => b.Business_Assets).ThenInclude(ba => ba.Asset)
+                .Include(b => b.System_Business_customers).ThenInclude(ub => ub.GlobalSystem)
                 .Where(b => b.visible == true).ToListAsync();
+            return Ok(businesses);
+        }
+
+        [HttpGet("GetAllBusinessForTask/{id}")]
+        public async Task<IActionResult> GetAllBusinessForTask(int id)
+        {
+            var businerss = await db.Businesses.FindAsync(id);
+            if (businerss.Role.Contains("Manager"))
+            {
+                var allBusinesses = await db.Businesses.Include(b => b.Country)
+                .Where(b => b.visible == true).ToListAsync();
+                return Ok(allBusinesses);
+            }
+
+            var businesses = await db.Businesses.Include(b => b.Country)
+                .Where(b => b.Business_id == id)
+                .Where(b => b.visible == true).ToListAsync();
+
             return Ok(businesses);
         }
 
@@ -94,7 +126,7 @@ namespace Universal_server.Controllers.Admin
 
             if (model.address != null && model.address.Count > 0)
             {
-                foreach(AddressDto addressDto in model.address)
+                foreach (AddressDto addressDto in model.address)
                 {
                     var address = new Address
                     {
@@ -117,7 +149,7 @@ namespace Universal_server.Controllers.Admin
                     model.AddressId ??= new List<int>();
                     model.AddressId.Add(address.Address_id);
                 }
-               
+
             }
 
             var business = new Business
@@ -138,6 +170,7 @@ namespace Universal_server.Controllers.Admin
                 Insert_by = "",
                 Insert_on = DateOnly.FromDateTime(DateTime.UtcNow),
                 visible = true,
+                Role = "Normal"
             };
             await db.Businesses.AddAsync(business);
             await db.SaveChangesAsync();
@@ -151,7 +184,7 @@ namespace Universal_server.Controllers.Admin
                         Description = ser.Description,
                         IsPublic = ser.IsPublic,
                         Service_icon = ser.Service_icon,
-                        Service_Route = $"/Home/{ser.Description.ToLower()}"
+                        Service_Route = $"/Home/{ser.Description.Replace(" ", "-").ToLower()}"
                     };
                     await db.Services.AddAsync(service);
                     await db.SaveChangesAsync();
@@ -191,6 +224,219 @@ namespace Universal_server.Controllers.Admin
             await db.SaveChangesAsync();
             return Ok(business);
         }
+
+        [HttpPut("AddActivitiesToBusiness")]
+        public async Task<IActionResult> AddActivitiesToBusiness([FromBody] AddActivitiesToBusiness model)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            var currentBusiness = await db.Businesses.FindAsync(model.Business_id);
+            if (currentBusiness == null) return BadRequest("Business not found");
+
+            var businessAct = await db.Business_Activitiies.Where(ba => ba.Business_id == model.Business_id && model.ActivitiesIds.Contains(ba.Activity_id)).ToListAsync();
+            if (businessAct != null)
+            {
+                db.Business_Activitiies.RemoveRange(businessAct);
+                await db.SaveChangesAsync();
+            }
+
+            foreach (var id in model.ActivitiesIds)
+            {
+                var newActivityBus = new Business_Activitiy
+                {
+                    Activity_id = id,
+                    Business_id = currentBusiness.Business_id,
+
+                };
+                await db.Business_Activitiies.AddAsync(newActivityBus);
+            }
+            await db.SaveChangesAsync();
+            return Ok(currentBusiness);
+        }
+
+
+
+        [HttpPut("SetServingToBusiness")]
+        public async Task<IActionResult> SetServingToBusiness([FromBody] SetServingToBusiness model)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            var currentBusiness = await db.Businesses.FindAsync(model.Business_id);
+            if (currentBusiness == null) return BadRequest("Business not found");
+
+            foreach (var id in model.consumerBusinessIds)
+            {
+                var newRelBus = new BusinessRelation
+                {
+                    ProviderBusinessId = model.Business_id,
+                    ConsumerBusinessId = id,
+                };
+                try
+                {
+                    await db.BusinessRelations.AddAsync(newRelBus);
+                }
+                catch (Exception ex) { }
+
+            }
+            await db.SaveChangesAsync();
+            return Ok(currentBusiness);
+        }
+
+
+
+
+        [HttpPut("AddCustomesToBusiness")]
+        public async Task<IActionResult> AddCustomesToBusiness([FromBody] AddCustomeToBusiness model)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            var currentBusiness = await db.Businesses.FindAsync(model.Business_id);
+            if (currentBusiness == null) return BadRequest("Business not found");
+
+            var customer = await db.GlobalCustomers
+                .Where(c => c.CustomerMobile == model.GlobalCustomerDto.CustomerMobile)
+                .FirstOrDefaultAsync();
+
+            if (customer != null)
+            {
+                var businessCustomer = new Buseness_Customer
+                {
+                    Business_id = model.Business_id,
+                    GlobalCustomerId = customer.GlobalCustomerId
+                };
+                await db.Buseness_Customers.AddAsync(businessCustomer);
+            }
+            else
+            {
+
+
+
+                var newCustomer = new GlobalCustomer
+                {
+                    CustomerName = model.GlobalCustomerDto.CustomerName,
+                    CustomerMobile = model.GlobalCustomerDto.CustomerMobile,
+                    CustomerEmail = model.GlobalCustomerDto.CustomerEmail,
+                    Country_id = model.GlobalCustomerDto.Country_id,
+                    Insert_on = DateOnly.FromDateTime(DateTime.Now),
+                    Insert_by = "",
+                    visible = true
+                };
+
+                await db.GlobalCustomers.AddAsync(newCustomer);
+                await db.SaveChangesAsync();
+
+                var address = new Address
+                {
+                    Line_1 = model.GlobalCustomerDto.Address.Line_1,
+                    Line_2 = model.GlobalCustomerDto.Address.Line_2,
+                    StateId = model.GlobalCustomerDto.Address.StateId,
+                    Post_code = model.GlobalCustomerDto.Address.Post_code,
+                    CityId = model.GlobalCustomerDto.Address.CityId,
+                    AreaId = model.GlobalCustomerDto.Address.AreaId,
+                    CountryId = model.GlobalCustomerDto.Address.CountryId,
+                    Land_Mark = model.GlobalCustomerDto.Address.LandMark,
+                    Us_City = model.GlobalCustomerDto.Address.Us_City,
+                    Insert_on = DateOnly.FromDateTime(DateTime.Now),
+                    GlobalCustomerId = newCustomer.GlobalCustomerId,
+                    visible = true,
+                    Insert_by = ""
+                };
+                await db.Addresses.AddAsync(address);
+                await db.SaveChangesAsync();
+
+                var businessCustomer = new Buseness_Customer
+                {
+                    Business_id = model.Business_id,
+                    GlobalCustomerId = newCustomer.GlobalCustomerId,
+                    IsOwner = false
+                };
+                await db.Buseness_Customers.AddAsync(businessCustomer);
+            }
+
+            await db.SaveChangesAsync();
+            return Ok(currentBusiness);
+        }
+
+
+        [HttpPut("SetCustomerAsBusinessOwner")]
+        public async Task<IActionResult> SetCustomerAsBusinessOwner([FromBody] SetCustomerAsOwner model)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            var currentBusiness = await db.Businesses.FindAsync(model.Business_id);
+            if (currentBusiness == null) return BadRequest("Business not found");
+
+            var customer = await db.GlobalCustomers.FindAsync(model.GlobalCustomerId);
+
+            if (customer == null) return BadRequest();
+
+            var businessCustomer = await db.Buseness_Customers
+                .Where(bc => bc.Business_id == model.Business_id && bc.GlobalCustomerId == model.GlobalCustomerId)
+                .FirstOrDefaultAsync();
+
+            if (businessCustomer != null)
+                businessCustomer.IsOwner = true;
+
+            await db.SaveChangesAsync();
+            return Ok(currentBusiness);
+        }
+
+        [HttpDelete("RemoveActivityFromBusiness/{activityId}/{businessId}")]
+        public async Task<IActionResult> RemoveActivityFromBusiness(int activityId, int businessId)
+        {
+            var bus_activity = await db.Business_Activitiies.Where(ba => ba.Activity_id == activityId && ba.Business_id == businessId).FirstOrDefaultAsync();
+            if (bus_activity == null) return BadRequest("Activity not found");
+
+            db.Business_Activitiies.Remove(bus_activity);
+
+            await db.SaveChangesAsync();
+            return Ok(bus_activity);
+        }
+
+
+        [HttpDelete("RemoveCustomerFromBusiness/{busCusId}")]
+        public async Task<IActionResult> RemoveCustomerFromBusiness(int busCusId)
+        {
+            var businessCust = await db.Buseness_Customers.FindAsync(busCusId);
+            if (businessCust == null) return BadRequest("businessOwner not found");
+
+            db.Buseness_Customers.Remove(businessCust);
+            await db.SaveChangesAsync();
+            return Ok(new
+            {
+                msg = "businessOwner removed successfuly"
+            });
+        }
+
+        [HttpDelete("RemoveCustomerFromBusinessAsOwner/{busCusId}")]
+        public async Task<IActionResult> RemoveCustomerFromBusinessAsOwner(int busCusId)
+        {
+            var businessOwner = await db.Buseness_Customers.FindAsync(busCusId);
+            if (businessOwner == null) return BadRequest("businessOwner not found");
+
+            businessOwner.IsOwner = false;
+            await db.SaveChangesAsync();
+            return Ok(new
+            {
+                msg = "businessOwner removed successfuly"
+            });
+        }
+
+        [HttpDelete("RemoveServiceFromBusiness/{serviceId}/{businessId}")]
+        public async Task<IActionResult> RemoveServiceFromBusiness(int serviceId, int businessId)
+        {
+            var businessService = await db.Business_Services.SingleOrDefaultAsync(bs => bs.Service_id == serviceId && bs.Business_id == businessId);
+            if (businessService == null) return BadRequest("service not found");
+
+            db.Business_Services.Remove(businessService);
+            await db.SaveChangesAsync();
+
+            return Ok(new
+            {
+                msg = "businessService removed successfuly"
+            });
+        }
+
 
 
         [HttpPut("{id}")]
@@ -275,7 +521,7 @@ namespace Universal_server.Controllers.Admin
                         Description = ser.Description,
                         IsPublic = ser.IsPublic,
                         Service_icon = ser.Service_icon,
-                        Service_Route = $"Home/{ser.Description}"
+                        Service_Route = $"Home/{ser.Description.Replace(" ", "-").ToLower()}"
                     };
 
                     db.Services.Add(service);
@@ -337,9 +583,9 @@ namespace Universal_server.Controllers.Admin
             }
             else
             {
-                if(model.AddressId != null && model.AddressId.Count > 0)
+                if (model.AddressId != null && model.AddressId.Count > 0)
                 {
-                    foreach(var idd in model.AddressId)
+                    foreach (var idd in model.AddressId)
                     {
                         db.Business_Addresses.Add(new Business_Address
                         {
@@ -353,7 +599,7 @@ namespace Universal_server.Controllers.Admin
             }
 
 
-                await db.SaveChangesAsync();
+            await db.SaveChangesAsync();
             return Ok(business);
         }
 
@@ -369,5 +615,161 @@ namespace Universal_server.Controllers.Admin
             return Ok(business);
         }
 
+
+
+        [HttpDelete("RemoveBusinessRelation/{BusinessRelationId}")]
+        public async Task<IActionResult> RemoveBusinessRelation(int BusinessRelationId)
+        {
+            var busRelation = await db.BusinessRelations.FindAsync(BusinessRelationId);
+            if (busRelation == null) return BadRequest("not found");
+
+            db.BusinessRelations.Remove(busRelation);
+            await db.SaveChangesAsync();
+            return Ok(new
+            {
+                msg = "busRelation deleted succesfuly! ..."
+            });
+        }
+
+        [HttpPost("AddUsers")]
+        public async Task<IActionResult> AddUsers([FromBody] RegisterUserModel model)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var existingUser = await _userManager.FindByNameAsync(model.UserName);
+            if (existingUser != null)
+                return BadRequest("Username already exists");
+
+            var user = new IdentityUserData
+            {
+                UserName = model.UserName,
+                Email = model.Email
+            };
+
+            string password = await GenerateRandomPassword.GeneratePassword();
+
+            using var transaction = await db.Database.BeginTransactionAsync();
+
+            try
+            {
+                var result = await _userManager.CreateAsync(user, password);
+                if (!result.Succeeded)
+                    return BadRequest(result.Errors);
+
+                user.UserPassword = password;
+                await _userManager.UpdateAsync(user);
+
+                if (model.Roles?.Any() == true)
+                {
+                    foreach (var role in model.Roles)
+                    {
+                        if (await _roleManager.RoleExistsAsync(role))
+                        {
+                            await _userManager.AddToRoleAsync(user, role);
+                        }
+                    }
+                }
+
+                if (model.BusinessIds?.Any() == true)
+                {
+                    var validBusinessIds = await db.Businesses
+                        .Where(b => model.BusinessIds.Contains(b.Business_id))
+                        .Select(b => b.Business_id)
+                        .ToListAsync();
+
+                    foreach (var businessId in validBusinessIds)
+                    {
+                        await db.UsersBusinesseses.AddAsync(new UsersBusinesses
+                        {
+                            UserId = user.Id,
+                            Business_id = businessId
+                        });
+                    }
+
+                    await db.SaveChangesAsync();
+                }
+
+                await transaction.CommitAsync();
+
+                return Ok(new
+                {
+                    message = "User added successfully",
+                    password
+                });
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                return StatusCode(500, new
+                {
+                    message = "An error occurred while creating the user",
+                    error = ex.Message
+                });
+            }
+        }
+
+
+        //[HttpPut("BindBusinessWithPlatforms")]
+        //public async Task<IActionResult> BindBusinessWithPlatforms(BindBusinessWithPlatforms model)
+        //{
+        //    foreach (var platformId in model.PlatformsIds)
+        //    {
+        //        var platform = await db.Platforms.FindAsync(platformId);
+        //        if (platform != null)
+        //            platform.BusinessId = model.Business_id;
+        //    }
+
+        //    await db.SaveChangesAsync();
+
+        //    return Ok(model);
+        //}
+
+        //[HttpPut("UnBindBusinessWithPlatforms/{platformId}")]
+        //public async Task<IActionResult> UnBindBusinessWithPlatforms(int platformId)
+        //{
+        //    var platform = await db.Platforms.FindAsync(platformId);
+        //    if (platform != null) return NotFound();
+
+        //    platform.BusinessId = null;
+
+        //    await db.SaveChangesAsync();
+
+        //    return Ok(platform);
+        //}
     }
+
+    public class AddActivitiesToBusiness
+    {
+        public int Business_id { get; set; }
+        public List<int> ActivitiesIds { get; set; }
+    }
+
+    public class AddCustomeToBusiness
+    {
+        public int Business_id { get; set; }
+        public GlobalCustomerDto GlobalCustomerDto { get; set; }
+    }
+
+    public class SetCustomerAsOwner
+    {
+        public int Business_id { get; set; }
+        public int GlobalCustomerId { get; set; }
+    }
+
+    public class SetServingToBusiness
+    {
+        public int Business_id { get; set; }
+        public List<int> consumerBusinessIds { get; set; }
+
+    }
+
+    public class BindBusinessWithPlatforms
+    {
+        public int Business_id { get; set; }
+        public List<int> PlatformsIds { get; set; }
+    }
+
 }
+
+

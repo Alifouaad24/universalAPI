@@ -22,6 +22,57 @@ namespace Universal_server.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("CarBrand", b =>
+                {
+                    b.Property<int>("CarBrandId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CarBrandId"));
+
+                    b.Property<int?>("BusinessId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CarBrandImgUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CarBrandName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("CarBrandId");
+
+                    b.HasIndex("CarBrandName");
+
+                    b.ToTable("CarBrands");
+                });
+
+            modelBuilder.Entity("Case", b =>
+                {
+                    b.Property<int>("CaseId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CaseId"));
+
+                    b.Property<int>("CarInfoTblId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CustomerId")
+                        .HasColumnType("int");
+
+                    b.Property<DateOnly?>("Date")
+                        .HasColumnType("date");
+
+                    b.HasKey("CaseId");
+
+                    b.HasIndex("CarInfoTblId");
+
+                    b.HasIndex("CustomerId");
+
+                    b.ToTable("Cases");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -163,12 +214,9 @@ namespace Universal_server.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Activity_id"));
 
-                    b.Property<int>("Business_id")
-                        .HasColumnType("int");
-
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Insert_by")
                         .HasColumnType("nvarchar(max)");
@@ -181,7 +229,7 @@ namespace Universal_server.Migrations
 
                     b.HasKey("Activity_id");
 
-                    b.HasIndex("Business_id");
+                    b.HasIndex("Description");
 
                     b.ToTable("Activiities");
                 });
@@ -218,6 +266,9 @@ namespace Universal_server.Migrations
                     b.Property<int?>("CountryId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("GlobalCustomerId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Insert_by")
                         .HasColumnType("nvarchar(max)");
 
@@ -227,10 +278,16 @@ namespace Universal_server.Migrations
                     b.Property<string>("Land_Mark")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Line_1")
+                    b.Property<string>("LatTute")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Line_1")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("Line_2")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LognTute")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Post_code")
@@ -253,9 +310,39 @@ namespace Universal_server.Migrations
 
                     b.HasIndex("CountryId");
 
+                    b.HasIndex("GlobalCustomerId");
+
+                    b.HasIndex("Line_1");
+
                     b.HasIndex("StateId");
 
                     b.ToTable("Addresses");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.AliModels.Device", b =>
+                {
+                    b.Property<int>("DeviceId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DeviceId"));
+
+                    b.Property<string>("DeviceName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsAdmin")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsApproved")
+                        .HasColumnType("bit");
+
+                    b.Property<DateOnly>("RequestData")
+                        .HasColumnType("date");
+
+                    b.HasKey("DeviceId");
+
+                    b.ToTable("Devices");
                 });
 
             modelBuilder.Entity("Universal_server.Models.Area", b =>
@@ -288,6 +375,70 @@ namespace Universal_server.Migrations
                     b.ToTable("Areas");
                 });
 
+            modelBuilder.Entity("Universal_server.Models.Asset", b =>
+                {
+                    b.Property<int>("AssetId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AssetId"));
+
+                    b.Property<string>("AssetName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("AssetType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("AssetId");
+
+                    b.ToTable("Assets");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.Assign_type", b =>
+                {
+                    b.Property<int>("Assign_typeId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Assign_typeId"));
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Assign_typeId");
+
+                    b.ToTable("Assign_types");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.Buseness_Customer", b =>
+                {
+                    b.Property<int>("Buseness_CustomerId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Buseness_CustomerId"));
+
+                    b.Property<int?>("Business_id")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("GlobalCustomerId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsOwner")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Buseness_CustomerId");
+
+                    b.HasIndex("Business_id");
+
+                    b.HasIndex("GlobalCustomerId");
+
+                    b.ToTable("Buseness_Customers");
+                });
+
             modelBuilder.Entity("Universal_server.Models.Business", b =>
                 {
                     b.Property<int>("Business_id")
@@ -313,7 +464,7 @@ namespace Universal_server.Migrations
 
                     b.Property<string>("Business_name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Business_phone")
                         .HasColumnType("nvarchar(max)");
@@ -342,6 +493,9 @@ namespace Universal_server.Migrations
                     b.Property<bool>("Is_active")
                         .HasColumnType("bit");
 
+                    b.Property<string>("Role")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("visible")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
@@ -349,9 +503,120 @@ namespace Universal_server.Migrations
 
                     b.HasKey("Business_id");
 
+                    b.HasIndex("Business_name");
+
                     b.HasIndex("CountryId");
 
                     b.ToTable("Businesses");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.BusinessItem", b =>
+                {
+                    b.Property<int>("BusinessItemId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BusinessItemId"));
+
+                    b.Property<int?>("BusinessId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsOnlineSaleEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("ItemId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<decimal?>("SalePrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("BusinessItemId");
+
+                    b.HasIndex("BusinessId");
+
+                    b.HasIndex("ItemId");
+
+                    b.ToTable("BusinessItems");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.BusinessPlatforms", b =>
+                {
+                    b.Property<int>("BusinessPlatformsId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BusinessPlatformsId"));
+
+                    b.Property<int?>("Business_id")
+                        .HasColumnType("int");
+
+                    b.Property<bool?>("ForScraping")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("ForSelling")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("Platform_id")
+                        .HasColumnType("int");
+
+                    b.HasKey("BusinessPlatformsId");
+
+                    b.HasIndex("Business_id");
+
+                    b.HasIndex("Platform_id");
+
+                    b.ToTable("BusinessPlatforms");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.BusinessRelation", b =>
+                {
+                    b.Property<int>("BusinessRelationId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BusinessRelationId"));
+
+                    b.Property<int?>("ConsumerBusinessId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("GlobalCustomerId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProviderBusinessId")
+                        .HasColumnType("int");
+
+                    b.HasKey("BusinessRelationId");
+
+                    b.HasIndex("ConsumerBusinessId");
+
+                    b.HasIndex("GlobalCustomerId");
+
+                    b.HasIndex("ProviderBusinessId", "ConsumerBusinessId")
+                        .IsUnique()
+                        .HasFilter("[ConsumerBusinessId] IS NOT NULL");
+
+                    b.ToTable("BusinessRelations");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.Business_Activitiy", b =>
+                {
+                    b.Property<int>("Activity_id")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Business_id")
+                        .HasColumnType("int");
+
+                    b.HasKey("Activity_id", "Business_id");
+
+                    b.HasIndex("Business_id");
+
+                    b.ToTable("Business_Activitiies");
                 });
 
             modelBuilder.Entity("Universal_server.Models.Business_Address", b =>
@@ -380,6 +645,32 @@ namespace Universal_server.Migrations
                     b.ToTable("Business_Addresses");
                 });
 
+            modelBuilder.Entity("Universal_server.Models.Business_Asset", b =>
+                {
+                    b.Property<int>("Business_AssetId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Business_AssetId"));
+
+                    b.Property<string>("Account_Id")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("AssetId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Business_id")
+                        .HasColumnType("int");
+
+                    b.HasKey("Business_AssetId");
+
+                    b.HasIndex("AssetId");
+
+                    b.HasIndex("Business_id");
+
+                    b.ToTable("Business_Assets");
+                });
+
             modelBuilder.Entity("Universal_server.Models.Business_BusinessType", b =>
                 {
                     b.Property<int>("Business_id")
@@ -406,19 +697,77 @@ namespace Universal_server.Migrations
                     b.ToTable("Business_BusinessTypes");
                 });
 
+            modelBuilder.Entity("Universal_server.Models.Business_Owner", b =>
+                {
+                    b.Property<int>("Business_OwnerId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Business_OwnerId"));
+
+                    b.Property<int?>("Business_id")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("GlobalCustomerId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Business_OwnerId");
+
+                    b.HasIndex("Business_id");
+
+                    b.HasIndex("GlobalCustomerId");
+
+                    b.ToTable("Business_Owners");
+                });
+
             modelBuilder.Entity("Universal_server.Models.Business_Service", b =>
                 {
+                    b.Property<int>("Business_ServiceId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Business_ServiceId"));
+
                     b.Property<int>("Business_id")
                         .HasColumnType("int");
+
+                    b.Property<bool>("Is_Consumer")
+                        .HasColumnType("bit");
 
                     b.Property<int>("Service_id")
                         .HasColumnType("int");
 
-                    b.HasKey("Business_id", "Service_id");
+                    b.HasKey("Business_ServiceId");
 
                     b.HasIndex("Service_id");
 
+                    b.HasIndex("Business_id", "Service_id")
+                        .IsUnique();
+
                     b.ToTable("Business_Services");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.Business_Service_Platform", b =>
+                {
+                    b.Property<int>("Business_Service_PlatformId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Business_Service_PlatformId"));
+
+                    b.Property<int>("Business_ServiceId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Platform_id")
+                        .HasColumnType("int");
+
+                    b.HasKey("Business_Service_PlatformId");
+
+                    b.HasIndex("Business_ServiceId");
+
+                    b.HasIndex("Platform_id");
+
+                    b.ToTable("Business_Service_Platforms");
                 });
 
             modelBuilder.Entity("Universal_server.Models.Business_type", b =>
@@ -431,7 +780,7 @@ namespace Universal_server.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Insert_by")
                         .HasColumnType("nvarchar(max)");
@@ -446,7 +795,182 @@ namespace Universal_server.Migrations
 
                     b.HasKey("Business_type_id");
 
+                    b.HasIndex("Description");
+
                     b.ToTable("Business_types");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.CarImage", b =>
+                {
+                    b.Property<int>("CarImageId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CarImageId"));
+
+                    b.Property<int>("CarInfoTblId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("UploadedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("CarImageId");
+
+                    b.HasIndex("CarInfoTblId");
+
+                    b.ToTable("CarImage");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.CarInfoTbl", b =>
+                {
+                    b.Property<int>("CarInfoTblId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CarInfoTblId"));
+
+                    b.Property<int?>("CarBrandId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CarModelId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CarYearId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("GlobalCustomerId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("VinNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("CarInfoTblId");
+
+                    b.HasIndex("CarBrandId");
+
+                    b.HasIndex("CarModelId");
+
+                    b.HasIndex("CarYearId");
+
+                    b.HasIndex("GlobalCustomerId");
+
+                    b.ToTable("CarInfoTbls");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.CarModel", b =>
+                {
+                    b.Property<int>("CarModelId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CarModelId"));
+
+                    b.Property<int>("CarBrandId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CarModelName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("CarModelId");
+
+                    b.HasIndex("CarBrandId");
+
+                    b.HasIndex("CarModelName");
+
+                    b.ToTable("CarModels");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.CarYear", b =>
+                {
+                    b.Property<int>("CarYearId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CarYearId"));
+
+                    b.Property<string>("CarYearNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("CarYearId");
+
+                    b.HasIndex("CarYearNumber");
+
+                    b.ToTable("CarYears");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.Case_Service", b =>
+                {
+                    b.Property<int>("Case_ServiceId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Case_ServiceId"));
+
+                    b.Property<int>("CaseID")
+                        .HasColumnType("int");
+
+                    b.Property<decimal?>("Cost")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("Discount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool?>("Resolved")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("Service_id")
+                        .HasColumnType("int");
+
+                    b.Property<decimal?>("paid")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Case_ServiceId");
+
+                    b.HasIndex("CaseID");
+
+                    b.HasIndex("Service_id");
+
+                    b.ToTable("Case_Services");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.Case_Service_Notes", b =>
+                {
+                    b.Property<int>("Case_ServiceNotesId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Case_ServiceNotesId"));
+
+                    b.Property<int?>("Case_ServiceId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("GlobalOrderDetailId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("OredesServicesId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Case_ServiceNotesId");
+
+                    b.HasIndex("Case_ServiceId");
+
+                    b.HasIndex("GlobalOrderDetailId");
+
+                    b.HasIndex("OredesServicesId");
+
+                    b.ToTable("Case_Service_Notes");
                 });
 
             modelBuilder.Entity("Universal_server.Models.Category", b =>
@@ -457,15 +981,27 @@ namespace Universal_server.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Category_id"));
 
+                    b.Property<int?>("Business_id")
+                        .HasColumnType("int");
+
+                    b.Property<string>("EbayCategoryId")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Insert_by")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateOnly>("Insert_on")
                         .HasColumnType("date");
 
+                    b.Property<int?>("LinkedCategoryId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ParentId")
+                        .HasColumnType("int");
 
                     b.Property<bool>("visible")
                         .ValueGeneratedOnAdd()
@@ -474,7 +1010,26 @@ namespace Universal_server.Migrations
 
                     b.HasKey("Category_id");
 
+                    b.HasIndex("Business_id");
+
                     b.ToTable("Categories");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.Cause", b =>
+                {
+                    b.Property<int>("CauseId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CauseId"));
+
+                    b.Property<string>("CauseName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("CauseId");
+
+                    b.ToTable("Causes");
                 });
 
             modelBuilder.Entity("Universal_server.Models.City", b =>
@@ -499,6 +1054,123 @@ namespace Universal_server.Migrations
                     b.HasIndex("CountryId");
 
                     b.ToTable("Cities");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.Color", b =>
+                {
+                    b.Property<int>("ColorId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ColorId"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ColorId");
+
+                    b.ToTable("Colors");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.Comment", b =>
+                {
+                    b.Property<int>("CommentId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CommentId"));
+
+                    b.Property<string>("AddedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("AddedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CommentContent")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("FeatureId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("GlobalOrderId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("bit");
+
+                    b.HasKey("CommentId");
+
+                    b.HasIndex("FeatureId");
+
+                    b.HasIndex("GlobalOrderId");
+
+                    b.ToTable("Comments");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.Complaint", b =>
+                {
+                    b.Property<int>("ComplaintId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ComplaintId"));
+
+                    b.Property<int?>("Complaint_ValueId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("GlobalOrderId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ComplaintId");
+
+                    b.HasIndex("Complaint_ValueId");
+
+                    b.HasIndex("GlobalOrderId");
+
+                    b.ToTable("Complaints");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.ComplaintType", b =>
+                {
+                    b.Property<int>("ComplaintTypeId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ComplaintTypeId"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ComplaintTypeId");
+
+                    b.ToTable("ComplaintTypes");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.Complaint_Value", b =>
+                {
+                    b.Property<int>("Complaint_ValueId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Complaint_ValueId"));
+
+                    b.Property<int?>("ComplaintTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Value")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Complaint_ValueId");
+
+                    b.HasIndex("ComplaintTypeId");
+
+                    b.ToTable("Complaint_Values");
                 });
 
             modelBuilder.Entity("Universal_server.Models.Country", b =>
@@ -529,6 +1201,23 @@ namespace Universal_server.Migrations
                     b.ToTable("Countries");
                 });
 
+            modelBuilder.Entity("Universal_server.Models.Currency", b =>
+                {
+                    b.Property<int>("CurrencyId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CurrencyId"));
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("CurrencyId");
+
+                    b.ToTable("Currencies");
+                });
+
             modelBuilder.Entity("Universal_server.Models.Feature", b =>
                 {
                     b.Property<int>("FeatureId")
@@ -537,27 +1226,369 @@ namespace Universal_server.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FeatureId"));
 
+                    b.Property<string>("Body")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("Business_id")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("GlobalSystemId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Insert_by")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateOnly>("Insert_on")
                         .HasColumnType("date");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int?>("Service_id")
                         .HasColumnType("int");
+
+                    b.Property<string>("Status")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("visible")
                         .HasColumnType("bit");
 
                     b.HasKey("FeatureId");
 
+                    b.HasIndex("Business_id");
+
+                    b.HasIndex("GlobalSystemId");
+
                     b.HasIndex("Service_id");
 
                     b.ToTable("Features");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.Finantial_item", b =>
+                {
+                    b.Property<int>("Finantial_itemId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Finantial_itemId"));
+
+                    b.Property<string>("Finantial_description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Finantial_itemId");
+
+                    b.ToTable("Finantial_items");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.GlobalCustomer", b =>
+                {
+                    b.Property<int>("GlobalCustomerId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("GlobalCustomerId"));
+
+                    b.Property<int?>("Country_id")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CustomerEmail")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CustomerImage")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CustomerMobile")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("CustomerName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Insert_by")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateOnly>("Insert_on")
+                        .HasColumnType("date");
+
+                    b.Property<string>("customerCode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("visible")
+                        .HasColumnType("bit");
+
+                    b.HasKey("GlobalCustomerId");
+
+                    b.HasIndex("Country_id");
+
+                    b.HasIndex("CustomerMobile");
+
+                    b.ToTable("GlobalCustomers");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.GlobalMerchant", b =>
+                {
+                    b.Property<int>("GlobalMerchantId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("GlobalMerchantId"));
+
+                    b.Property<int?>("Bgw")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Branch")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Bypass")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Cities")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CityId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Credit")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CustomerId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Hidden")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("IsPublic")
+                        .HasColumnType("int");
+
+                    b.Property<string>("MerchantMob")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MerchantName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("Outskirts")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("SmsAlert")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Sorting")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UsDelivery")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("GlobalMerchantId");
+
+                    b.ToTable("GlobalMerchants");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.GlobalOrder", b =>
+                {
+                    b.Property<int>("GlobalOrderId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("GlobalOrderId"));
+
+                    b.Property<string>("AssigneeId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("AssigneeTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("AssignerId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("AssignerTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Business_id")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Cart_value")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ConsumerBusiness_id")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateOnly>("CreatedDate")
+                        .HasColumnType("date");
+
+                    b.Property<int?>("GlobalCustomerId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("IdentityUserDataId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateOnly>("InsertDate")
+                        .HasColumnType("date");
+
+                    b.Property<int?>("ItemId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Modified_by")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("OrderStatusId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Platform_id")
+                        .HasColumnType("int");
+
+                    b.Property<DateOnly?>("Schedule_dt")
+                        .HasColumnType("date");
+
+                    b.Property<string>("Schedule_time")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("Service_id")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ShippingTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("SupplierId")
+                        .HasColumnType("int");
+
+                    b.HasKey("GlobalOrderId");
+
+                    b.HasIndex("AssigneeTypeId");
+
+                    b.HasIndex("AssignerTypeId");
+
+                    b.HasIndex("Business_id");
+
+                    b.HasIndex("ConsumerBusiness_id");
+
+                    b.HasIndex("GlobalCustomerId");
+
+                    b.HasIndex("IdentityUserDataId");
+
+                    b.HasIndex("ItemId");
+
+                    b.HasIndex("OrderStatusId");
+
+                    b.HasIndex("Platform_id");
+
+                    b.HasIndex("Service_id");
+
+                    b.HasIndex("ShippingTypeId");
+
+                    b.HasIndex("SupplierId");
+
+                    b.ToTable("GlobalOrders");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.GlobalOrderDetail", b =>
+                {
+                    b.Property<int>("GlobalOrderDetailId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("GlobalOrderDetailId"));
+
+                    b.Property<int?>("CauseId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ComplaintId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal?>("Cost")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("Discount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("GlobalOrderId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("IdentityUserDataId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ItemId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("PriceDollar")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("PriceIQ")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("ServiceStatusId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Service_id")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UnitId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal?>("UnitValue")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("paid")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("GlobalOrderDetailId");
+
+                    b.HasIndex("CauseId");
+
+                    b.HasIndex("ComplaintId");
+
+                    b.HasIndex("GlobalOrderId");
+
+                    b.HasIndex("IdentityUserDataId");
+
+                    b.HasIndex("ItemId");
+
+                    b.HasIndex("ServiceStatusId");
+
+                    b.HasIndex("Service_id");
+
+                    b.HasIndex("UnitId");
+
+                    b.ToTable("GlobalOrderDetails");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.GlobalSystem", b =>
+                {
+                    b.Property<int>("GlobalSystemId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("GlobalSystemId"));
+
+                    b.Property<string>("GlobalSystemName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("GlobalSystemType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("GlobalSystemUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("GlobalSystemId");
+
+                    b.HasIndex("GlobalSystemName");
+
+                    b.ToTable("GlobalSystems");
                 });
 
             modelBuilder.Entity("Universal_server.Models.IdentityUserData", b =>
@@ -578,6 +1609,9 @@ namespace Universal_server.Migrations
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
+
+                    b.Property<string>("FcmToken")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
@@ -639,11 +1673,26 @@ namespace Universal_server.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Inventory_id"));
 
+                    b.Property<int?>("Business_id")
+                        .HasColumnType("int");
+
                     b.Property<int?>("Category_id")
                         .HasColumnType("int");
 
                     b.Property<decimal?>("Depth")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("EbayInvID")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EbayListingId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EbayOfferID")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("FolderImages")
+                        .HasColumnType("int");
 
                     b.Property<decimal?>("Height")
                         .HasColumnType("decimal(18,2)");
@@ -651,16 +1700,40 @@ namespace Universal_server.Migrations
                     b.Property<string>("Insert_by")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateOnly>("Insert_on")
-                        .HasColumnType("date");
+                    b.Property<DateTime?>("Insert_on")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("InternetId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsProccessedInInventory")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsPublishedOnMarketPlace")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsSold")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("ItemConditionId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ItemId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("MarketPlaceOfferUrl")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Model")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("NotFound")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OldStatus")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("Platform_id")
@@ -670,16 +1743,24 @@ namespace Universal_server.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Product_name")
-                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("QtyInInventory")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("QtyPublished")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SitePrice")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("Size_id")
                         .HasColumnType("int");
 
-                    b.Property<int?>("Size_id1")
-                        .HasColumnType("int");
-
                     b.Property<string>("Sku")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Status")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Upc")
@@ -695,11 +1776,17 @@ namespace Universal_server.Migrations
 
                     b.HasKey("Inventory_id");
 
+                    b.HasIndex("Business_id");
+
                     b.HasIndex("Category_id");
+
+                    b.HasIndex("ItemConditionId");
+
+                    b.HasIndex("ItemId");
 
                     b.HasIndex("Platform_id");
 
-                    b.HasIndex("Size_id1");
+                    b.HasIndex("Size_id");
 
                     b.ToTable("Inventories");
                 });
@@ -774,6 +1861,673 @@ namespace Universal_server.Migrations
                     b.ToTable("Inventoy_images");
                 });
 
+            modelBuilder.Entity("Universal_server.Models.Item", b =>
+                {
+                    b.Property<int>("ItemId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ItemId"));
+
+                    b.Property<decimal?>("BasePrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<bool?>("CanScrape")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("CarBrandId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CarModelId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CarYearId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ColorId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CurrencyId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("GlobalCustomerId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal?>("Height")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("InsertBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Internet")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("InternetId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool?>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("IsComplated")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("IsScraped")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ItemDescription")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ItemDetails")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("Length")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Model")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("PlatformId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SKU")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ShortCode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("SizeId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UPC")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("UnitId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal?>("UnitValue")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("VinNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("Weight")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("Width")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("ItemId");
+
+                    b.HasIndex("CarBrandId");
+
+                    b.HasIndex("CarModelId");
+
+                    b.HasIndex("CarYearId");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("ColorId");
+
+                    b.HasIndex("CurrencyId");
+
+                    b.HasIndex("GlobalCustomerId");
+
+                    b.HasIndex("PlatformId");
+
+                    b.HasIndex("SizeId");
+
+                    b.HasIndex("UnitId");
+
+                    b.ToTable("Items");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.ItemCondition", b =>
+                {
+                    b.Property<int>("ItemConditionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ItemConditionId"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("EbayConditionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ItemConditionId");
+
+                    b.ToTable("ItemConditions");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.ItemImage", b =>
+                {
+                    b.Property<int>("ItemImageId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ItemImageId"));
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsMain")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("IsPublishedOnEbay")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("ItemId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ItemImageId");
+
+                    b.HasIndex("ItemId");
+
+                    b.ToTable("ItemImages");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.Logistic", b =>
+                {
+                    b.Property<int>("LogisticId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LogisticId"));
+
+                    b.Property<int?>("Business_id")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CurrencyId")
+                        .HasColumnType("int");
+
+                    b.HasKey("LogisticId");
+
+                    b.HasIndex("Business_id");
+
+                    b.HasIndex("CurrencyId");
+
+                    b.ToTable("Logistics");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.Logistic_shippingType", b =>
+                {
+                    b.Property<int>("Logistic_shippingTypeId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Logistic_shippingTypeId"));
+
+                    b.Property<int?>("LogisticId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ShippingTypeId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Logistic_shippingTypeId");
+
+                    b.HasIndex("LogisticId");
+
+                    b.HasIndex("ShippingTypeId");
+
+                    b.ToTable("Logistic_shippingType");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.Order", b =>
+                {
+                    b.Property<int>("OrderId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderId"));
+
+                    b.Property<int?>("Acknoledged")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ActualDeliveryDt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("AdminAdj")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("AdminBonus")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("AdvOrder")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("AdvancePayment")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("AgentUserId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Aliexbatchid")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("AssymblyCharges")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("AssymblyCleared")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("AssymblyCollectedBy")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("BatchId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("BonusDeduct")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("BonusIq")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("BookingDt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal?>("BookingSource")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("BranchId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CenrtralBankPrice")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CityReceipt")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("CloseAcknoledgeDt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("Closed")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Collected")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CollectedByOwner")
+                        .HasColumnType("int");
+
+                    b.Property<DateOnly?>("CollectionAdjustmentDt")
+                        .HasColumnType("date");
+
+                    b.Property<DateTime?>("CollectionDt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("CompDeliveryAdj")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CompSortAdj")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("DeductProgressed")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("DeliveryCharges")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("DeliveryCleared")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("DeliveryCollectedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("DeliveryDt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeliveryNotes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("FinancAdj")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("FinanceStatus")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("FullyPackage")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Hxcode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("IsCredit")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("LastBeforeStatusId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("LinkedAdvNorderNo")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("LocalDeliveryAdj")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("MerchantId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("NetAmount")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Netrevenue")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("OnlineOrder")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("OrderCaseId")
+                        .HasColumnType("int");
+
+                    b.Property<DateOnly?>("OrderDt")
+                        .HasColumnType("date");
+
+                    b.Property<int?>("OrderOwner")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("OrderStatus")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("PageReturnArrange")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("PickupDt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("PreClose")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PriceLog")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateOnly?>("ReceiptDt")
+                        .HasColumnType("date");
+
+                    b.Property<string>("ReceiptNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateOnly?>("ReturnDt")
+                        .HasColumnType("date");
+
+                    b.Property<int?>("Returned")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ServiceCharges")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("SmsnotificationDt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("SortFeesAdj")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Source")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("TaskStatusId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("TaskWithAgentId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ToWarehouse")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Totalqty")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Transferred")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("WithAgent")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("WithAgentId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("WithDelivery")
+                        .HasColumnType("int");
+
+                    b.HasKey("OrderId");
+
+                    b.HasIndex("OrderOwner");
+
+                    b.ToTable("Orders");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.OrderDetail", b =>
+                {
+                    b.Property<int>("OrderDetailId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderDetailId"));
+
+                    b.Property<int?>("Adjusted")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("BonusUs")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("BookingDt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("CollectionFeesIq")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("DeliveryFeesIq")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("FinanceStatus")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("InsertDt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("ItemCode")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("MerchantId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Missing")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("OnlineOrder")
+                        .HasColumnType("int");
+
+                    b.Property<string>("OrderId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("OrderNo")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("OriginalAmount")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("PageReturn")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Preorder")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Qty")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Removed")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("RestPaid")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("RestPaidCleared")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("RestPaidCollectedBy")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Returned")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Size")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Sorted")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("SourcePrice")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("TaskStatusId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("TempMissing")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TrackingNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("Value")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ValueCleared")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ValueCollecedBy")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("WebsitePrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("Weight")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("Whs")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("WhsBatchId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Whsid")
+                        .HasColumnType("int");
+
+                    b.HasKey("OrderDetailId");
+
+                    b.HasIndex("ItemCode");
+
+                    b.HasIndex("MerchantId");
+
+                    b.HasIndex("OrderNo");
+
+                    b.HasIndex("Size");
+
+                    b.ToTable("OrderDetails");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.OrderItems", b =>
+                {
+                    b.Property<int>("OrderItemsId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderItemsId"));
+
+                    b.Property<int>("GlobalOrderId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ItemsId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("Service_id")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Size_id")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UniversalOrderId")
+                        .HasColumnType("int");
+
+                    b.HasKey("OrderItemsId");
+
+                    b.HasIndex("GlobalOrderId");
+
+                    b.HasIndex("ItemsId");
+
+                    b.HasIndex("Service_id");
+
+                    b.HasIndex("Size_id");
+
+                    b.HasIndex("UniversalOrderId");
+
+                    b.ToTable("OrderItems");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.OredesServices", b =>
+                {
+                    b.Property<int>("OredesServicesId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OredesServicesId"));
+
+                    b.Property<int?>("CarInfoId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal?>("Cost")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("Discount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("GlobalOrderId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool?>("Resolved")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("ServiceId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal?>("paid")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("OredesServicesId");
+
+                    b.HasIndex("CarInfoId");
+
+                    b.HasIndex("GlobalOrderId");
+
+                    b.HasIndex("ServiceId");
+
+                    b.ToTable("OredesServices");
+                });
+
             modelBuilder.Entity("Universal_server.Models.Platform", b =>
                 {
                     b.Property<int>("Platform_id")
@@ -792,6 +2546,15 @@ namespace Universal_server.Migrations
                     b.Property<DateOnly>("Insert_on")
                         .HasColumnType("date");
 
+                    b.Property<string>("LogoUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ProductKry")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ProductUrl")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("visible")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
@@ -800,6 +2563,75 @@ namespace Universal_server.Migrations
                     b.HasKey("Platform_id");
 
                     b.ToTable("Platforms");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.PlatformAccount", b =>
+                {
+                    b.Property<int>("PlatformAccountId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PlatformAccountId"));
+
+                    b.Property<string>("Account")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("PlatformId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("PlatformAccountId");
+
+                    b.HasIndex("PlatformId");
+
+                    b.ToTable("PlatformAccounts");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.PricingCart", b =>
+                {
+                    b.Property<int>("PricingCartId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PricingCartId"));
+
+                    b.HasKey("PricingCartId");
+
+                    b.ToTable("PricingCarts");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.PricingCartItem", b =>
+                {
+                    b.Property<int>("PricingCartItemId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PricingCartItemId"));
+
+                    b.Property<int?>("ItemId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("PricingCartId")
+                        .HasColumnType("int");
+
+                    b.HasKey("PricingCartItemId");
+
+                    b.HasIndex("ItemId");
+
+                    b.HasIndex("PricingCartId");
+
+                    b.ToTable("PricingCartItems");
                 });
 
             modelBuilder.Entity("Universal_server.Models.Service", b =>
@@ -812,7 +2644,7 @@ namespace Universal_server.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Insert_by")
                         .HasColumnType("nvarchar(max)");
@@ -822,6 +2654,9 @@ namespace Universal_server.Migrations
 
                     b.Property<bool>("IsPublic")
                         .HasColumnType("bit");
+
+                    b.Property<int?>("ParentId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Service_Route")
                         .IsRequired()
@@ -838,7 +2673,105 @@ namespace Universal_server.Migrations
 
                     b.HasKey("Service_id");
 
+                    b.HasIndex("Description");
+
                     b.ToTable("Services");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.ShippingCost", b =>
+                {
+                    b.Property<int>("ShippingCostId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ShippingCostId"));
+
+                    b.Property<int?>("Business_id")
+                        .HasColumnType("int");
+
+                    b.Property<decimal?>("CostAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("LogisticId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal?>("SaleAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("Weight_UnitId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal?>("Weight_Value")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("ShippingCostId");
+
+                    b.HasIndex("Business_id");
+
+                    b.HasIndex("LogisticId");
+
+                    b.HasIndex("Weight_UnitId");
+
+                    b.ToTable("ShippingCosts");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.ShippingList", b =>
+                {
+                    b.Property<int>("ShippingListId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ShippingListId"));
+
+                    b.Property<int?>("Business_id")
+                        .HasColumnType("int");
+
+                    b.Property<DateOnly>("CreatedAt")
+                        .HasColumnType("date");
+
+                    b.Property<int?>("FromCountryId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("NackName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ShippingTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ToCountryId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ShippingListId");
+
+                    b.HasIndex("Business_id");
+
+                    b.HasIndex("FromCountryId");
+
+                    b.HasIndex("ShippingTypeId");
+
+                    b.HasIndex("ToCountryId");
+
+                    b.ToTable("ShippingLists");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.ShippingType", b =>
+                {
+                    b.Property<int>("ShippingTypeId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ShippingTypeId"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ShippingTypeId");
+
+                    b.ToTable("ShippingTypes");
                 });
 
             modelBuilder.Entity("Universal_server.Models.Size", b =>
@@ -894,6 +2827,67 @@ namespace Universal_server.Migrations
                     b.HasIndex("CountryId");
 
                     b.ToTable("States");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.Supplier", b =>
+                {
+                    b.Property<int>("SupplierId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SupplierId"));
+
+                    b.Property<int?>("ConsumerId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Platform_id")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ProviderId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ServiceId")
+                        .HasColumnType("int");
+
+                    b.HasKey("SupplierId");
+
+                    b.HasIndex("ConsumerId");
+
+                    b.HasIndex("Platform_id");
+
+                    b.HasIndex("ProviderId");
+
+                    b.HasIndex("ServiceId");
+
+                    b.ToTable("Suppliers");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.System_Business_customer", b =>
+                {
+                    b.Property<int>("System_BusinessId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("System_BusinessId"));
+
+                    b.Property<int?>("Business_id")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("GlobalCustomerId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("GlobalSystemId")
+                        .HasColumnType("int");
+
+                    b.HasKey("System_BusinessId");
+
+                    b.HasIndex("Business_id");
+
+                    b.HasIndex("GlobalCustomerId");
+
+                    b.HasIndex("GlobalSystemId");
+
+                    b.ToTable("System_Business_customers");
                 });
 
             modelBuilder.Entity("Universal_server.Models.System_gateway", b =>
@@ -985,6 +2979,211 @@ namespace Universal_server.Migrations
                     b.ToTable("System_sectore_details");
                 });
 
+            modelBuilder.Entity("Universal_server.Models.Unit", b =>
+                {
+                    b.Property<int>("UnitId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UnitId"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NameAr")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("UnitId");
+
+                    b.ToTable("Units");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.UniversalOrder", b =>
+                {
+                    b.Property<int>("UniversalOrderId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UniversalOrderId"));
+
+                    b.Property<int?>("Business_id")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Cart_value")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateOnly>("CreatedDate")
+                        .HasColumnType("date");
+
+                    b.Property<int?>("GlobalCustomerId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Modified_by")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("OrderStatusId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Platform_id")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ShippingTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("SupplierId")
+                        .HasColumnType("int");
+
+                    b.HasKey("UniversalOrderId");
+
+                    b.HasIndex("Business_id");
+
+                    b.HasIndex("GlobalCustomerId");
+
+                    b.HasIndex("OrderStatusId");
+
+                    b.HasIndex("Platform_id");
+
+                    b.HasIndex("ShippingTypeId");
+
+                    b.HasIndex("SupplierId");
+
+                    b.ToTable("UniversalOrders");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.UniversalOrderService", b =>
+                {
+                    b.Property<int>("OrderServiceId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderServiceId"));
+
+                    b.Property<int>("ItemId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("Service_id")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Size_id")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UniversalOrderId")
+                        .HasColumnType("int");
+
+                    b.HasKey("OrderServiceId");
+
+                    b.HasIndex("ItemId");
+
+                    b.HasIndex("Service_id");
+
+                    b.HasIndex("Size_id");
+
+                    b.HasIndex("UniversalOrderId");
+
+                    b.ToTable("UniversalOrderServices");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.UniversalOrderStatus", b =>
+                {
+                    b.Property<int>("OrderStatusId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderStatusId"));
+
+                    b.Property<int?>("Business_id")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Service_id")
+                        .HasColumnType("int");
+
+                    b.Property<string>("StatusAr")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("StatusEn")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("OrderStatusId");
+
+                    b.HasIndex("Business_id");
+
+                    b.HasIndex("Service_id");
+
+                    b.ToTable("UniversalOrderStatus");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.UserFolder", b =>
+                {
+                    b.Property<int>("UserFolderId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserFolderId"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("ItemId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("UserFolderId");
+
+                    b.ToTable("UserFolders");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.UserImage", b =>
+                {
+                    b.Property<int>("UserImagesId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserImagesId"));
+
+                    b.Property<int>("BusinessId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("FolderId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("InsertDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsProccessed")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("ItemId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("UserImagesId");
+
+                    b.HasIndex("ItemId");
+
+                    b.ToTable("UserImages");
+                });
+
             modelBuilder.Entity("Universal_server.Models.UsersBusinesses", b =>
                 {
                     b.Property<string>("UserId")
@@ -1007,6 +3206,69 @@ namespace Universal_server.Migrations
                     b.HasIndex("Business_id");
 
                     b.ToTable("UsersBusinesseses");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.Weight_Unit", b =>
+                {
+                    b.Property<int>("Weight_UnitId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Weight_UnitId"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Weight_UnitId");
+
+                    b.ToTable("Weight_Units");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.caseImage", b =>
+                {
+                    b.Property<int>("caseImageId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("caseImageId"));
+
+                    b.Property<int?>("CaseId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("GlobalOrderId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("caseImageId");
+
+                    b.HasIndex("CaseId");
+
+                    b.HasIndex("GlobalOrderId");
+
+                    b.ToTable("caseImages");
+                });
+
+            modelBuilder.Entity("Case", b =>
+                {
+                    b.HasOne("Universal_server.Models.CarInfoTbl", "CarInfoTbl")
+                        .WithMany()
+                        .HasForeignKey("CarInfoTblId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Universal_server.Models.GlobalCustomer", "Customer")
+                        .WithMany()
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CarInfoTbl");
+
+                    b.Navigation("Customer");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -1060,17 +3322,6 @@ namespace Universal_server.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Universal_server.Models.Activiity", b =>
-                {
-                    b.HasOne("Universal_server.Models.Business", "business")
-                        .WithMany("Activities")
-                        .HasForeignKey("Business_id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("business");
-                });
-
             modelBuilder.Entity("Universal_server.Models.Activity_Service", b =>
                 {
                     b.HasOne("Universal_server.Models.Activiity", "Activiity")
@@ -1104,6 +3355,10 @@ namespace Universal_server.Migrations
                         .WithMany()
                         .HasForeignKey("CountryId");
 
+                    b.HasOne("Universal_server.Models.GlobalCustomer", "GlobalCustomer")
+                        .WithMany("Address")
+                        .HasForeignKey("GlobalCustomerId");
+
                     b.HasOne("Universal_server.Models.State", "State")
                         .WithMany()
                         .HasForeignKey("StateId");
@@ -1113,6 +3368,8 @@ namespace Universal_server.Migrations
                     b.Navigation("City");
 
                     b.Navigation("Country");
+
+                    b.Navigation("GlobalCustomer");
 
                     b.Navigation("State");
                 });
@@ -1126,6 +3383,21 @@ namespace Universal_server.Migrations
                     b.Navigation("City");
                 });
 
+            modelBuilder.Entity("Universal_server.Models.Buseness_Customer", b =>
+                {
+                    b.HasOne("Universal_server.Models.Business", "Business")
+                        .WithMany("Buseness_Customers")
+                        .HasForeignKey("Business_id");
+
+                    b.HasOne("Universal_server.Models.GlobalCustomer", "GlobalCustomer")
+                        .WithMany("Buseness_Customers")
+                        .HasForeignKey("GlobalCustomerId");
+
+                    b.Navigation("Business");
+
+                    b.Navigation("GlobalCustomer");
+                });
+
             modelBuilder.Entity("Universal_server.Models.Business", b =>
                 {
                     b.HasOne("Universal_server.Models.Country", "Country")
@@ -1133,6 +3405,79 @@ namespace Universal_server.Migrations
                         .HasForeignKey("CountryId");
 
                     b.Navigation("Country");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.BusinessItem", b =>
+                {
+                    b.HasOne("Universal_server.Models.Business", "Business")
+                        .WithMany("BusinessItems")
+                        .HasForeignKey("BusinessId");
+
+                    b.HasOne("Universal_server.Models.Item", "Item")
+                        .WithMany("BusinessItems")
+                        .HasForeignKey("ItemId");
+
+                    b.Navigation("Business");
+
+                    b.Navigation("Item");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.BusinessPlatforms", b =>
+                {
+                    b.HasOne("Universal_server.Models.Business", "Business")
+                        .WithMany()
+                        .HasForeignKey("Business_id");
+
+                    b.HasOne("Universal_server.Models.Platform", "Platform")
+                        .WithMany("BusinessPlatforms")
+                        .HasForeignKey("Platform_id");
+
+                    b.Navigation("Business");
+
+                    b.Navigation("Platform");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.BusinessRelation", b =>
+                {
+                    b.HasOne("Universal_server.Models.Business", "ConsumerBusiness")
+                        .WithMany("ConsumerBusinessRelations")
+                        .HasForeignKey("ConsumerBusinessId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Universal_server.Models.GlobalCustomer", "GlobalCustomer")
+                        .WithMany()
+                        .HasForeignKey("GlobalCustomerId");
+
+                    b.HasOne("Universal_server.Models.Business", "ProviderBusiness")
+                        .WithMany("ProviderBusinessRelations")
+                        .HasForeignKey("ProviderBusinessId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("ConsumerBusiness");
+
+                    b.Navigation("GlobalCustomer");
+
+                    b.Navigation("ProviderBusiness");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.Business_Activitiy", b =>
+                {
+                    b.HasOne("Universal_server.Models.Activiity", "Activiity")
+                        .WithMany("Business_Activitiy")
+                        .HasForeignKey("Activity_id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Universal_server.Models.Business", "Business")
+                        .WithMany("Business_Activitiy")
+                        .HasForeignKey("Business_id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Activiity");
+
+                    b.Navigation("Business");
                 });
 
             modelBuilder.Entity("Universal_server.Models.Business_Address", b =>
@@ -1150,6 +3495,21 @@ namespace Universal_server.Migrations
                         .IsRequired();
 
                     b.Navigation("Address");
+
+                    b.Navigation("Business");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.Business_Asset", b =>
+                {
+                    b.HasOne("Universal_server.Models.Asset", "Asset")
+                        .WithMany("Business_Assets")
+                        .HasForeignKey("AssetId");
+
+                    b.HasOne("Universal_server.Models.Business", "Business")
+                        .WithMany("Business_Assets")
+                        .HasForeignKey("Business_id");
+
+                    b.Navigation("Asset");
 
                     b.Navigation("Business");
                 });
@@ -1173,6 +3533,21 @@ namespace Universal_server.Migrations
                     b.Navigation("BusinessType");
                 });
 
+            modelBuilder.Entity("Universal_server.Models.Business_Owner", b =>
+                {
+                    b.HasOne("Universal_server.Models.Business", "Business")
+                        .WithMany("Business_Owners")
+                        .HasForeignKey("Business_id");
+
+                    b.HasOne("Universal_server.Models.GlobalCustomer", "GlobalCustomer")
+                        .WithMany()
+                        .HasForeignKey("GlobalCustomerId");
+
+                    b.Navigation("Business");
+
+                    b.Navigation("GlobalCustomer");
+                });
+
             modelBuilder.Entity("Universal_server.Models.Business_Service", b =>
                 {
                     b.HasOne("Universal_server.Models.Business", "Business")
@@ -1192,6 +3567,119 @@ namespace Universal_server.Migrations
                     b.Navigation("Service");
                 });
 
+            modelBuilder.Entity("Universal_server.Models.Business_Service_Platform", b =>
+                {
+                    b.HasOne("Universal_server.Models.Business_Service", "Business_Service")
+                        .WithMany()
+                        .HasForeignKey("Business_ServiceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Universal_server.Models.Platform", "Platform")
+                        .WithMany()
+                        .HasForeignKey("Platform_id");
+
+                    b.Navigation("Business_Service");
+
+                    b.Navigation("Platform");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.CarImage", b =>
+                {
+                    b.HasOne("Universal_server.Models.CarInfoTbl", "CarInfoTbl")
+                        .WithMany("Images")
+                        .HasForeignKey("CarInfoTblId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CarInfoTbl");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.CarInfoTbl", b =>
+                {
+                    b.HasOne("CarBrand", "CarBrand")
+                        .WithMany()
+                        .HasForeignKey("CarBrandId");
+
+                    b.HasOne("Universal_server.Models.CarModel", "CarModel")
+                        .WithMany()
+                        .HasForeignKey("CarModelId");
+
+                    b.HasOne("Universal_server.Models.CarYear", "CarYear")
+                        .WithMany()
+                        .HasForeignKey("CarYearId");
+
+                    b.HasOne("Universal_server.Models.GlobalCustomer", "Customer")
+                        .WithMany("CarsInfoTbl")
+                        .HasForeignKey("GlobalCustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CarBrand");
+
+                    b.Navigation("CarModel");
+
+                    b.Navigation("CarYear");
+
+                    b.Navigation("Customer");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.CarModel", b =>
+                {
+                    b.HasOne("CarBrand", "CarBrand")
+                        .WithMany("CarModels")
+                        .HasForeignKey("CarBrandId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CarBrand");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.Case_Service", b =>
+                {
+                    b.HasOne("Case", "Case")
+                        .WithMany("Case_Services")
+                        .HasForeignKey("CaseID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Universal_server.Models.Service", "Service")
+                        .WithMany("Case_Services")
+                        .HasForeignKey("Service_id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Case");
+
+                    b.Navigation("Service");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.Case_Service_Notes", b =>
+                {
+                    b.HasOne("Universal_server.Models.Case_Service", null)
+                        .WithMany("Case_Service_Notes")
+                        .HasForeignKey("Case_ServiceId");
+
+                    b.HasOne("Universal_server.Models.GlobalOrderDetail", "GlobalOrderDetail")
+                        .WithMany("Case_Service_Notes")
+                        .HasForeignKey("GlobalOrderDetailId");
+
+                    b.HasOne("Universal_server.Models.OredesServices", null)
+                        .WithMany("Case_Service_Notes")
+                        .HasForeignKey("OredesServicesId");
+
+                    b.Navigation("GlobalOrderDetail");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.Category", b =>
+                {
+                    b.HasOne("Universal_server.Models.Business", "Business")
+                        .WithMany()
+                        .HasForeignKey("Business_id");
+
+                    b.Navigation("Business");
+                });
+
             modelBuilder.Entity("Universal_server.Models.City", b =>
                 {
                     b.HasOne("Universal_server.Models.Country", "Country")
@@ -1201,20 +3689,216 @@ namespace Universal_server.Migrations
                     b.Navigation("Country");
                 });
 
+            modelBuilder.Entity("Universal_server.Models.Comment", b =>
+                {
+                    b.HasOne("Universal_server.Models.Feature", null)
+                        .WithMany("Comments")
+                        .HasForeignKey("FeatureId");
+
+                    b.HasOne("Universal_server.Models.GlobalOrder", null)
+                        .WithMany("Comments")
+                        .HasForeignKey("GlobalOrderId");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.Complaint", b =>
+                {
+                    b.HasOne("Universal_server.Models.Complaint_Value", "Complaint_Value")
+                        .WithMany()
+                        .HasForeignKey("Complaint_ValueId");
+
+                    b.HasOne("Universal_server.Models.GlobalOrder", "GlobalOrder")
+                        .WithMany()
+                        .HasForeignKey("GlobalOrderId");
+
+                    b.Navigation("Complaint_Value");
+
+                    b.Navigation("GlobalOrder");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.Complaint_Value", b =>
+                {
+                    b.HasOne("Universal_server.Models.ComplaintType", "ComplaintType")
+                        .WithMany()
+                        .HasForeignKey("ComplaintTypeId");
+
+                    b.Navigation("ComplaintType");
+                });
+
             modelBuilder.Entity("Universal_server.Models.Feature", b =>
                 {
+                    b.HasOne("Universal_server.Models.Business", "Business")
+                        .WithMany()
+                        .HasForeignKey("Business_id");
+
+                    b.HasOne("Universal_server.Models.GlobalSystem", "GlobalSystem")
+                        .WithMany()
+                        .HasForeignKey("GlobalSystemId");
+
                     b.HasOne("Universal_server.Models.Service", "Service")
                         .WithMany()
                         .HasForeignKey("Service_id");
 
+                    b.Navigation("Business");
+
+                    b.Navigation("GlobalSystem");
+
                     b.Navigation("Service");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.GlobalCustomer", b =>
+                {
+                    b.HasOne("Universal_server.Models.Country", "Country")
+                        .WithMany()
+                        .HasForeignKey("Country_id");
+
+                    b.Navigation("Country");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.GlobalOrder", b =>
+                {
+                    b.HasOne("Universal_server.Models.Assign_type", "AssigneeType")
+                        .WithMany()
+                        .HasForeignKey("AssigneeTypeId");
+
+                    b.HasOne("Universal_server.Models.Assign_type", "AssignerType")
+                        .WithMany()
+                        .HasForeignKey("AssignerTypeId");
+
+                    b.HasOne("Universal_server.Models.Business", "Business")
+                        .WithMany()
+                        .HasForeignKey("Business_id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Universal_server.Models.Business", "ConsumerBusiness")
+                        .WithMany()
+                        .HasForeignKey("ConsumerBusiness_id");
+
+                    b.HasOne("Universal_server.Models.GlobalCustomer", "Customer")
+                        .WithMany("GlobalOrders")
+                        .HasForeignKey("GlobalCustomerId");
+
+                    b.HasOne("Universal_server.Models.IdentityUserData", "IdentityUserData")
+                        .WithMany()
+                        .HasForeignKey("IdentityUserDataId");
+
+                    b.HasOne("Universal_server.Models.Item", "Item")
+                        .WithMany()
+                        .HasForeignKey("ItemId");
+
+                    b.HasOne("Universal_server.Models.UniversalOrderStatus", "OrderStatus")
+                        .WithMany()
+                        .HasForeignKey("OrderStatusId");
+
+                    b.HasOne("Universal_server.Models.Platform", "Platform")
+                        .WithMany()
+                        .HasForeignKey("Platform_id");
+
+                    b.HasOne("Universal_server.Models.Service", "Service")
+                        .WithMany()
+                        .HasForeignKey("Service_id");
+
+                    b.HasOne("Universal_server.Models.ShippingType", "ShippingType")
+                        .WithMany()
+                        .HasForeignKey("ShippingTypeId");
+
+                    b.HasOne("Universal_server.Models.Supplier", "Supplier")
+                        .WithMany()
+                        .HasForeignKey("SupplierId");
+
+                    b.Navigation("AssigneeType");
+
+                    b.Navigation("AssignerType");
+
+                    b.Navigation("Business");
+
+                    b.Navigation("ConsumerBusiness");
+
+                    b.Navigation("Customer");
+
+                    b.Navigation("IdentityUserData");
+
+                    b.Navigation("Item");
+
+                    b.Navigation("OrderStatus");
+
+                    b.Navigation("Platform");
+
+                    b.Navigation("Service");
+
+                    b.Navigation("ShippingType");
+
+                    b.Navigation("Supplier");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.GlobalOrderDetail", b =>
+                {
+                    b.HasOne("Universal_server.Models.Cause", "Cause")
+                        .WithMany()
+                        .HasForeignKey("CauseId");
+
+                    b.HasOne("Universal_server.Models.Complaint", "Complaint")
+                        .WithMany()
+                        .HasForeignKey("ComplaintId");
+
+                    b.HasOne("Universal_server.Models.GlobalOrder", "GlobalOrder")
+                        .WithMany("GlobalOrderDetail")
+                        .HasForeignKey("GlobalOrderId");
+
+                    b.HasOne("Universal_server.Models.IdentityUserData", "IdentityUserData")
+                        .WithMany()
+                        .HasForeignKey("IdentityUserDataId");
+
+                    b.HasOne("Universal_server.Models.Item", "Item")
+                        .WithMany()
+                        .HasForeignKey("ItemId");
+
+                    b.HasOne("Universal_server.Models.UniversalOrderStatus", "OrderStatus")
+                        .WithMany()
+                        .HasForeignKey("ServiceStatusId");
+
+                    b.HasOne("Universal_server.Models.Service", "Service")
+                        .WithMany()
+                        .HasForeignKey("Service_id");
+
+                    b.HasOne("Universal_server.Models.Unit", "Unit")
+                        .WithMany()
+                        .HasForeignKey("UnitId");
+
+                    b.Navigation("Cause");
+
+                    b.Navigation("Complaint");
+
+                    b.Navigation("GlobalOrder");
+
+                    b.Navigation("IdentityUserData");
+
+                    b.Navigation("Item");
+
+                    b.Navigation("OrderStatus");
+
+                    b.Navigation("Service");
+
+                    b.Navigation("Unit");
                 });
 
             modelBuilder.Entity("Universal_server.Models.Inventory", b =>
                 {
+                    b.HasOne("Universal_server.Models.Business", "Business")
+                        .WithMany()
+                        .HasForeignKey("Business_id");
+
                     b.HasOne("Universal_server.Models.Category", "Category")
                         .WithMany()
                         .HasForeignKey("Category_id");
+
+                    b.HasOne("Universal_server.Models.ItemCondition", "ItemCondition")
+                        .WithMany()
+                        .HasForeignKey("ItemConditionId");
+
+                    b.HasOne("Universal_server.Models.Item", "Item")
+                        .WithMany()
+                        .HasForeignKey("ItemId");
 
                     b.HasOne("Universal_server.Models.Platform", "platform")
                         .WithMany()
@@ -1222,9 +3906,15 @@ namespace Universal_server.Migrations
 
                     b.HasOne("Universal_server.Models.Size", "Size")
                         .WithMany()
-                        .HasForeignKey("Size_id1");
+                        .HasForeignKey("Size_id");
+
+                    b.Navigation("Business");
 
                     b.Navigation("Category");
+
+                    b.Navigation("Item");
+
+                    b.Navigation("ItemCondition");
 
                     b.Navigation("Size");
 
@@ -1261,6 +3951,234 @@ namespace Universal_server.Migrations
                     b.Navigation("Inventory");
                 });
 
+            modelBuilder.Entity("Universal_server.Models.Item", b =>
+                {
+                    b.HasOne("CarBrand", "CarBrand")
+                        .WithMany()
+                        .HasForeignKey("CarBrandId");
+
+                    b.HasOne("Universal_server.Models.CarModel", "CarModel")
+                        .WithMany()
+                        .HasForeignKey("CarModelId");
+
+                    b.HasOne("Universal_server.Models.CarYear", "CarYear")
+                        .WithMany()
+                        .HasForeignKey("CarYearId");
+
+                    b.HasOne("Universal_server.Models.Category", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId");
+
+                    b.HasOne("Universal_server.Models.Color", "Color")
+                        .WithMany()
+                        .HasForeignKey("ColorId");
+
+                    b.HasOne("Universal_server.Models.Currency", "Currency")
+                        .WithMany()
+                        .HasForeignKey("CurrencyId");
+
+                    b.HasOne("Universal_server.Models.GlobalCustomer", "Customer")
+                        .WithMany()
+                        .HasForeignKey("GlobalCustomerId");
+
+                    b.HasOne("Universal_server.Models.Platform", "Platform")
+                        .WithMany()
+                        .HasForeignKey("PlatformId");
+
+                    b.HasOne("Universal_server.Models.Size", "Size")
+                        .WithMany()
+                        .HasForeignKey("SizeId");
+
+                    b.HasOne("Universal_server.Models.Unit", "Unit")
+                        .WithMany()
+                        .HasForeignKey("UnitId");
+
+                    b.Navigation("CarBrand");
+
+                    b.Navigation("CarModel");
+
+                    b.Navigation("CarYear");
+
+                    b.Navigation("Category");
+
+                    b.Navigation("Color");
+
+                    b.Navigation("Currency");
+
+                    b.Navigation("Customer");
+
+                    b.Navigation("Platform");
+
+                    b.Navigation("Size");
+
+                    b.Navigation("Unit");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.ItemImage", b =>
+                {
+                    b.HasOne("Universal_server.Models.Item", "Item")
+                        .WithMany("Images")
+                        .HasForeignKey("ItemId");
+
+                    b.Navigation("Item");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.Logistic", b =>
+                {
+                    b.HasOne("Universal_server.Models.Business", "Business")
+                        .WithMany()
+                        .HasForeignKey("Business_id");
+
+                    b.HasOne("Universal_server.Models.Currency", "Currency")
+                        .WithMany()
+                        .HasForeignKey("CurrencyId");
+
+                    b.Navigation("Business");
+
+                    b.Navigation("Currency");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.Logistic_shippingType", b =>
+                {
+                    b.HasOne("Universal_server.Models.Logistic", "Logistic")
+                        .WithMany("Logistic_shippingType")
+                        .HasForeignKey("LogisticId");
+
+                    b.HasOne("Universal_server.Models.ShippingType", "ShippingType")
+                        .WithMany("ShippingTypes")
+                        .HasForeignKey("ShippingTypeId");
+
+                    b.Navigation("Logistic");
+
+                    b.Navigation("ShippingType");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.Order", b =>
+                {
+                    b.HasOne("Universal_server.Models.GlobalCustomer", "Customer")
+                        .WithMany()
+                        .HasForeignKey("OrderOwner");
+
+                    b.Navigation("Customer");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.OrderDetail", b =>
+                {
+                    b.HasOne("Universal_server.Models.Item", "Item")
+                        .WithMany()
+                        .HasForeignKey("ItemCode");
+
+                    b.HasOne("Universal_server.Models.GlobalMerchant", "Merchant")
+                        .WithMany()
+                        .HasForeignKey("MerchantId");
+
+                    b.HasOne("Universal_server.Models.Order", "Order")
+                        .WithMany("OrderDetails")
+                        .HasForeignKey("OrderNo");
+
+                    b.HasOne("Universal_server.Models.Size", "SizeTB")
+                        .WithMany()
+                        .HasForeignKey("Size");
+
+                    b.Navigation("Item");
+
+                    b.Navigation("Merchant");
+
+                    b.Navigation("Order");
+
+                    b.Navigation("SizeTB");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.OrderItems", b =>
+                {
+                    b.HasOne("Universal_server.Models.GlobalOrder", "GlobalOrder")
+                        .WithMany("OrderItems")
+                        .HasForeignKey("GlobalOrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Universal_server.Models.Item", "Item")
+                        .WithMany()
+                        .HasForeignKey("ItemsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Universal_server.Models.Service", "Service")
+                        .WithMany()
+                        .HasForeignKey("Service_id");
+
+                    b.HasOne("Universal_server.Models.Size", "Size")
+                        .WithMany()
+                        .HasForeignKey("Size_id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Universal_server.Models.UniversalOrder", null)
+                        .WithMany("OrderItems")
+                        .HasForeignKey("UniversalOrderId");
+
+                    b.Navigation("GlobalOrder");
+
+                    b.Navigation("Item");
+
+                    b.Navigation("Service");
+
+                    b.Navigation("Size");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.OredesServices", b =>
+                {
+                    b.HasOne("Universal_server.Models.CarInfoTbl", "CarInfoTbl")
+                        .WithMany()
+                        .HasForeignKey("CarInfoId");
+
+                    b.HasOne("Universal_server.Models.GlobalOrder", "GlobalOrder")
+                        .WithMany()
+                        .HasForeignKey("GlobalOrderId");
+
+                    b.HasOne("Universal_server.Models.Service", "Service")
+                        .WithMany("OredesServicess")
+                        .HasForeignKey("ServiceId");
+
+                    b.Navigation("CarInfoTbl");
+
+                    b.Navigation("GlobalOrder");
+
+                    b.Navigation("Service");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.PlatformAccount", b =>
+                {
+                    b.HasOne("Universal_server.Models.Platform", "Platform")
+                        .WithMany()
+                        .HasForeignKey("PlatformId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Platform");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.ShippingCost", b =>
+                {
+                    b.HasOne("Universal_server.Models.Business", "Business")
+                        .WithMany()
+                        .HasForeignKey("Business_id");
+
+                    b.HasOne("Universal_server.Models.Logistic", "Logistic")
+                        .WithMany("ShippingCosts")
+                        .HasForeignKey("LogisticId");
+
+                    b.HasOne("Universal_server.Models.Weight_Unit", "Weight_Unit")
+                        .WithMany()
+                        .HasForeignKey("Weight_UnitId");
+
+                    b.Navigation("Business");
+
+                    b.Navigation("Logistic");
+
+                    b.Navigation("Weight_Unit");
+                });
+
             modelBuilder.Entity("Universal_server.Models.Size", b =>
                 {
                     b.HasOne("Universal_server.Models.Category", "Category")
@@ -1281,6 +4199,54 @@ namespace Universal_server.Migrations
                     b.Navigation("Country");
                 });
 
+            modelBuilder.Entity("Universal_server.Models.Supplier", b =>
+                {
+                    b.HasOne("Universal_server.Models.Business", "ConsumerBusiness")
+                        .WithMany()
+                        .HasForeignKey("ConsumerId");
+
+                    b.HasOne("Universal_server.Models.Platform", "Platform")
+                        .WithMany()
+                        .HasForeignKey("Platform_id");
+
+                    b.HasOne("Universal_server.Models.Business", "ProviderBusiness")
+                        .WithMany()
+                        .HasForeignKey("ProviderId");
+
+                    b.HasOne("Universal_server.Models.Service", "Service")
+                        .WithMany()
+                        .HasForeignKey("ServiceId");
+
+                    b.Navigation("ConsumerBusiness");
+
+                    b.Navigation("Platform");
+
+                    b.Navigation("ProviderBusiness");
+
+                    b.Navigation("Service");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.System_Business_customer", b =>
+                {
+                    b.HasOne("Universal_server.Models.Business", "Business")
+                        .WithMany("System_Business_customers")
+                        .HasForeignKey("Business_id");
+
+                    b.HasOne("Universal_server.Models.GlobalCustomer", "GlobalCustomer")
+                        .WithMany("System_Business_customers")
+                        .HasForeignKey("GlobalCustomerId");
+
+                    b.HasOne("Universal_server.Models.GlobalSystem", "GlobalSystem")
+                        .WithMany("System_Business_customers")
+                        .HasForeignKey("GlobalSystemId");
+
+                    b.Navigation("Business");
+
+                    b.Navigation("GlobalCustomer");
+
+                    b.Navigation("GlobalSystem");
+                });
+
             modelBuilder.Entity("Universal_server.Models.System_sectore_details", b =>
                 {
                     b.HasOne("Universal_server.Models.System_sectore", "system_Sectore")
@@ -1288,6 +4254,100 @@ namespace Universal_server.Migrations
                         .HasForeignKey("System_sectore_id");
 
                     b.Navigation("system_Sectore");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.UniversalOrder", b =>
+                {
+                    b.HasOne("Universal_server.Models.Business", "Business")
+                        .WithMany()
+                        .HasForeignKey("Business_id");
+
+                    b.HasOne("Universal_server.Models.GlobalCustomer", "GlobalCustomer")
+                        .WithMany()
+                        .HasForeignKey("GlobalCustomerId");
+
+                    b.HasOne("Universal_server.Models.UniversalOrderStatus", "OrderStatus")
+                        .WithMany()
+                        .HasForeignKey("OrderStatusId");
+
+                    b.HasOne("Universal_server.Models.Platform", "Platform")
+                        .WithMany()
+                        .HasForeignKey("Platform_id");
+
+                    b.HasOne("Universal_server.Models.ShippingType", "ShippingType")
+                        .WithMany()
+                        .HasForeignKey("ShippingTypeId");
+
+                    b.HasOne("Universal_server.Models.Supplier", "Supplier")
+                        .WithMany()
+                        .HasForeignKey("SupplierId");
+
+                    b.Navigation("Business");
+
+                    b.Navigation("GlobalCustomer");
+
+                    b.Navigation("OrderStatus");
+
+                    b.Navigation("Platform");
+
+                    b.Navigation("ShippingType");
+
+                    b.Navigation("Supplier");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.UniversalOrderService", b =>
+                {
+                    b.HasOne("Universal_server.Models.Item", "Item")
+                        .WithMany()
+                        .HasForeignKey("ItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Universal_server.Models.Service", "Service")
+                        .WithMany()
+                        .HasForeignKey("Service_id");
+
+                    b.HasOne("Universal_server.Models.Size", "Size")
+                        .WithMany()
+                        .HasForeignKey("Size_id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Universal_server.Models.UniversalOrder", "UniversalOrder")
+                        .WithMany()
+                        .HasForeignKey("UniversalOrderId");
+
+                    b.Navigation("Item");
+
+                    b.Navigation("Service");
+
+                    b.Navigation("Size");
+
+                    b.Navigation("UniversalOrder");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.UniversalOrderStatus", b =>
+                {
+                    b.HasOne("Universal_server.Models.Business", "Business")
+                        .WithMany()
+                        .HasForeignKey("Business_id");
+
+                    b.HasOne("Universal_server.Models.Service", "Service")
+                        .WithMany()
+                        .HasForeignKey("Service_id");
+
+                    b.Navigation("Business");
+
+                    b.Navigation("Service");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.UserImage", b =>
+                {
+                    b.HasOne("Universal_server.Models.Item", "Item")
+                        .WithMany()
+                        .HasForeignKey("ItemId");
+
+                    b.Navigation("Item");
                 });
 
             modelBuilder.Entity("Universal_server.Models.UsersBusinesses", b =>
@@ -1309,9 +4369,38 @@ namespace Universal_server.Migrations
                     b.Navigation("UserData");
                 });
 
+            modelBuilder.Entity("Universal_server.Models.caseImage", b =>
+                {
+                    b.HasOne("Case", null)
+                        .WithMany("caseImages")
+                        .HasForeignKey("CaseId");
+
+                    b.HasOne("Universal_server.Models.GlobalOrder", "Order")
+                        .WithMany("orderImages")
+                        .HasForeignKey("GlobalOrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Order");
+                });
+
+            modelBuilder.Entity("CarBrand", b =>
+                {
+                    b.Navigation("CarModels");
+                });
+
+            modelBuilder.Entity("Case", b =>
+                {
+                    b.Navigation("Case_Services");
+
+                    b.Navigation("caseImages");
+                });
+
             modelBuilder.Entity("Universal_server.Models.Activiity", b =>
                 {
                     b.Navigation("Activity_Services");
+
+                    b.Navigation("Business_Activitiy");
                 });
 
             modelBuilder.Entity("Universal_server.Models.Address", b =>
@@ -1319,15 +4408,34 @@ namespace Universal_server.Migrations
                     b.Navigation("BusinessAddresses");
                 });
 
+            modelBuilder.Entity("Universal_server.Models.Asset", b =>
+                {
+                    b.Navigation("Business_Assets");
+                });
+
             modelBuilder.Entity("Universal_server.Models.Business", b =>
                 {
-                    b.Navigation("Activities");
+                    b.Navigation("Buseness_Customers");
 
                     b.Navigation("BusinessAddresses");
 
+                    b.Navigation("BusinessItems");
+
                     b.Navigation("BusinessTypes");
 
+                    b.Navigation("Business_Activitiy");
+
+                    b.Navigation("Business_Assets");
+
+                    b.Navigation("Business_Owners");
+
                     b.Navigation("Business_Services");
+
+                    b.Navigation("ConsumerBusinessRelations");
+
+                    b.Navigation("ProviderBusinessRelations");
+
+                    b.Navigation("System_Business_customers");
 
                     b.Navigation("UsersBusinesses");
                 });
@@ -1335,6 +4443,16 @@ namespace Universal_server.Migrations
             modelBuilder.Entity("Universal_server.Models.Business_type", b =>
                 {
                     b.Navigation("BusinessTypes");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.CarInfoTbl", b =>
+                {
+                    b.Navigation("Images");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.Case_Service", b =>
+                {
+                    b.Navigation("Case_Service_Notes");
                 });
 
             modelBuilder.Entity("Universal_server.Models.City", b =>
@@ -1351,6 +4469,45 @@ namespace Universal_server.Migrations
                     b.Navigation("States");
                 });
 
+            modelBuilder.Entity("Universal_server.Models.Feature", b =>
+                {
+                    b.Navigation("Comments");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.GlobalCustomer", b =>
+                {
+                    b.Navigation("Address");
+
+                    b.Navigation("Buseness_Customers");
+
+                    b.Navigation("CarsInfoTbl");
+
+                    b.Navigation("GlobalOrders");
+
+                    b.Navigation("System_Business_customers");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.GlobalOrder", b =>
+                {
+                    b.Navigation("Comments");
+
+                    b.Navigation("GlobalOrderDetail");
+
+                    b.Navigation("OrderItems");
+
+                    b.Navigation("orderImages");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.GlobalOrderDetail", b =>
+                {
+                    b.Navigation("Case_Service_Notes");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.GlobalSystem", b =>
+                {
+                    b.Navigation("System_Business_customers");
+                });
+
             modelBuilder.Entity("Universal_server.Models.IdentityUserData", b =>
                 {
                     b.Navigation("UsersBusinesses");
@@ -1361,11 +4518,54 @@ namespace Universal_server.Migrations
                     b.Navigation("inventoy_Images");
                 });
 
+            modelBuilder.Entity("Universal_server.Models.Item", b =>
+                {
+                    b.Navigation("BusinessItems");
+
+                    b.Navigation("Images");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.Logistic", b =>
+                {
+                    b.Navigation("Logistic_shippingType");
+
+                    b.Navigation("ShippingCosts");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.Order", b =>
+                {
+                    b.Navigation("OrderDetails");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.OredesServices", b =>
+                {
+                    b.Navigation("Case_Service_Notes");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.Platform", b =>
+                {
+                    b.Navigation("BusinessPlatforms");
+                });
+
             modelBuilder.Entity("Universal_server.Models.Service", b =>
                 {
                     b.Navigation("Activity_Services");
 
                     b.Navigation("Business_Services");
+
+                    b.Navigation("Case_Services");
+
+                    b.Navigation("OredesServicess");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.ShippingType", b =>
+                {
+                    b.Navigation("ShippingTypes");
+                });
+
+            modelBuilder.Entity("Universal_server.Models.UniversalOrder", b =>
+                {
+                    b.Navigation("OrderItems");
                 });
 #pragma warning restore 612, 618
         }

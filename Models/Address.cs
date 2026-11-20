@@ -12,9 +12,18 @@ namespace Universal_server.Models
         public string? Line_1 { get; set; }
         public string? Line_2 { get; set; }
 
+        public string? LognTute { get; set; }
+        public string? LatTute { get; set; }
+
         [ForeignKey(nameof(State))]
         public int? StateId { get; set; }
         public State? State { get; set; }
+
+
+        [ForeignKey(nameof(GlobalCustomer))]
+        public int? GlobalCustomerId { get; set; }
+        [JsonIgnore]
+        public GlobalCustomer? GlobalCustomer { get; set; }
 
         public string? Post_code { get; set; }
         public string? Us_City { get; set; }

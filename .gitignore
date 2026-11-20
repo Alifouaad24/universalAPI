@@ -1,0 +1,79 @@
+## Build output
+/bin/
+/obj/
+/out/
+
+# Firebase service account credentials
+Firebase/*.json
+## User-specific files
+*.user
+*.userosscache
+*.suo
+*.sln.docstates
+
+## Visual Studio metadata
+.vs/
+
+## ASP.NET temporary files
+App_Data/
+*.cache
+*.log
+
+## Packages
+/packages/
+/.nuget/packages/
+/*.nupkg
+
+## Logs
+*.log
+
+## Azure publish settings
+*.PublishSettings
+
+## Resharper
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+
+# Firebase service account
+Firebase/*-firebase-adminsdk-*.json
+
+# Local configuration / secrets
+appsettings.Development.json
+appsettings.Local.json
+
+## Rider
+.idea/
+
+## DotNET tools
+.tools/
+
+## Environment files
+*.env
+
+## EF Core Migrations snapshot (optional to ignore)
+/Migrations/**/ModelSnapshot.cs
+
+## Auto-generated files
+wwwroot/lib/
+node_modules/
+
+## Cache
+*.db
+*.db-shm
+*.db-wal
+
+## Others
+*.DS_Store
+Thumbs.db
+appsettings.json
+appsettings.Development.json
+/appsettings.json
+
+# Secrets / local configuration
+appsettings.json
+appsettings.*.json
+!appsettings.example.json
+Firebase/*.json
+*.pfx
+.env

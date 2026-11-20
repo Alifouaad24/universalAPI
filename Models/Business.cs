@@ -29,14 +29,19 @@ namespace Universal_server.Models
         public string? Business_youtube { get; set; }
         public string? Business_whatsapp { get; set; }
         public string? Business_email { get; set; }
-        public List<Activiity>? Activities { get; set; }
+        public List<Business_Activitiy>? Business_Activitiy { get; set; }
         public List<Business_BusinessType>? BusinessTypes { get; set; }
         public List<Business_Address>? BusinessAddresses { get; set; }
         public List<UsersBusinesses>? UsersBusinesses { get; set; }
-
         public List<Business_Service>? Business_Services { get; set; }
-
-
+        public List<BusinessRelation>? ProviderBusinessRelations { get; set; }
+        public List<BusinessRelation>? ConsumerBusinessRelations { get; set; }
+        public List<Buseness_Customer>? Buseness_Customers { get; set; }
+        public List<Business_Owner>? Business_Owners { get; set; }
+        public List<System_Business_customer>? System_Business_customers { get; set; }
+        public List<Business_Asset>? Business_Assets { get; set; }
+        public ICollection<BusinessItem>? BusinessItems { get; set; } = new List<BusinessItem>();
+        public string? Role { get; set; }
         public DateOnly Insert_on { get; set; }
         public string? Insert_by { get; set; }
         public bool visible { get; set; } = true;
