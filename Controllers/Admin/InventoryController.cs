@@ -571,6 +571,47 @@ namespace Universal_server.Controllers.Admin
 
             return Ok(newInv);
         }
+
+
+        [HttpGet("PublishedPlatforms/{invId}")]
+        public async Task<IActionResult> PublishedPlatforms(int invId)
+        {
+            var platforms = await dbContext.Inventory_Published_Items
+                .Where(p => p.Inventory_id == invId)
+                .GroupBy(p => p.Platform_id)
+                .Select(g => new
+                {
+                    platformId = g.Key,
+                    publishedOn = g.Max(x => x.PublishedOn)
+                })
+                .ToListAsync();
+
+            return Ok(platforms);
+        }
+
+
+
+
+
+        [HttpGet("GetSellingPlatforms/{businessId}")]
+        public async Task<IActionResult> GetSellingPlatforms(int businessId)
+        {
+            var platforms = await dbContext.BusinessPlatforms
+                .Where(bp => bp.Business_id == businessId
+                          && bp.ForSelling != false
+                          && bp.Platform != null)
+                .Select(bp => new
+                {
+                    platform_id = bp.Platform_id,
+                    description = bp.Platform!.Description,
+                    logoUrl = bp.Platform.LogoUrl
+                })
+                .Distinct()
+                .ToListAsync();
+
+            return Ok(platforms);
+        }
+        
     }
 }
 

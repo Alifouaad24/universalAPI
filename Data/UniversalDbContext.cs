@@ -249,5 +249,6 @@ namespace Universal_server.Data
         public DbSet<TariffDetails> TariffDetails { get; set; }
         public DbSet<PricingCart> PricingCarts { get; set; }
         public DbSet<PricingCartItem> PricingCartItems { get; set; }
+        public DbSet<Inventory_Published_Items> Inventory_Published_Items { get; set; }
     }
 }

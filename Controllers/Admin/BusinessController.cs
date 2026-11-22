@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Net;
+using System.Text.RegularExpressions;
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using Microsoft.AspNetCore.Authorization;
@@ -709,6 +710,234 @@ namespace Universal_server.Controllers.Admin
             }
         }
 
+        [HttpGet("GetUserGroups/{userId}")]
+        public async Task<IActionResult> GetUserGroups(string userId)
+        {
+            var userGroups = await db.BusinessGroups
+                .Include(b => b.BusinessGroupBusinesses)
+                    .ThenInclude(bg => bg.Business)
+                .Where(b => b.UserId == userId)
+                .ToListAsync();
+
+            return Ok(userGroups);
+        }
+
+        [HttpPost("addNewGroup")]
+        public async Task<IActionResult> addNewGroup(AddNewGroup model)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (model.businessesIds == null || !model.businessesIds.Any())
+                return BadRequest("Please select at least one business.");
+
+            var newGroup = new BusinessGroup
+            {
+                GroupName = model.name,
+                UserId = model.userId,
+                CreatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+            };
+
+            await db.BusinessGroups.AddAsync(newGroup);
+            await db.SaveChangesAsync();
+
+            foreach (var businessId in model.businessesIds.Distinct())
+            {
+
+                var bgs = new BusinessGroupBusinesses
+                {
+                    Business_id = businessId,
+                    BusinessGroupsId = newGroup.BusinessGroupId
+                };
+
+                await db.BusinessGroupBusinesses.AddAsync(bgs);
+
+            }
+
+            await db.SaveChangesAsync();
+
+            return Ok(newGroup);
+        }
+
+
+        [HttpPost("editGroup/{groupId}")]
+        public async Task<IActionResult> addNewGroup(int groupId, AddNewGroup model)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (model.businessesIds == null || !model.businessesIds.Any())
+                return BadRequest("Please select at least one business.");
+
+            var currentGroup = await db.BusinessGroups.FindAsync(groupId);
+
+            if (currentGroup == null) return NotFound(" Group not founf");
+
+
+            currentGroup.GroupName = model.name;
+            currentGroup.UserId = model.userId;
+            currentGroup.CreatedAt = DateOnly.FromDateTime(DateTime.UtcNow);
+
+            var businessesGroup = await db.BusinessGroupBusinesses.Where(bbgb => bbgb.BusinessGroupsId == groupId).ToListAsync();
+
+            if (businessesGroup != null && businessesGroup.Count > 0)
+            {
+                db.BusinessGroupBusinesses.RemoveRange(businessesGroup);
+            }
+
+
+            await db.SaveChangesAsync();
+
+            foreach (var businessId in model.businessesIds.Distinct())
+            {
+
+                var bgs = new BusinessGroupBusinesses
+                {
+                    Business_id = businessId,
+                    BusinessGroupsId = currentGroup.BusinessGroupId
+                };
+
+                await db.BusinessGroupBusinesses.AddAsync(bgs);
+
+            }
+
+            await db.SaveChangesAsync();
+
+            return Ok(currentGroup);
+        }
+
+
+        [HttpGet("getAllMedia/{businessId}")]
+        public async Task<IActionResult> getAllMedia(int businessId)
+        {
+            var media = await db.Multimedias
+                .Where(m => m.Business_id == businessId)
+                .OrderByDescending(m => m.MultimediaId)
+                .Select(m => new { m.MultimediaId, m.Business_id, m.fileUrl })
+                .ToListAsync();
+
+            return Ok(media);
+        }
+
+        [HttpPost("UpdateMedia")]
+        [RequestSizeLimit(25 * 1024 * 1024)]
+        public async Task<IActionResult> UpdateMedia([FromForm] UploadMedia model)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+            if (model.file == null || model.file.Length == 0) return BadRequest("No file selected");
+
+            var business = await db.Businesses.FindAsync(model.businessId);
+            if (business == null) return NotFound("Business not found");
+
+            var cloudinary = new Cloudinary(new Account(cloudName, apiKey, apiSecret));
+            var fileName = Path.GetFileName(model.file.FileName);
+            using var stream = model.file.OpenReadStream();
+            var description = new FileDescription(fileName, stream);
+
+            UploadResult result;
+            if ((model.file.ContentType ?? "").StartsWith("video/"))
+            {
+                result = await cloudinary.UploadAsync(new VideoUploadParams
+                {
+                    File = description,
+                    Folder = business.Business_name,
+                    UseFilename = true,
+                    UniqueFilename = true,
+                    Overwrite = false
+                });
+            }
+            else
+            {
+                // الصور وملفات PDF
+                result = await cloudinary.UploadAsync(new ImageUploadParams
+                {
+                    File = description,
+                    Folder = business.Business_name,
+                    UseFilename = true,
+                    UniqueFilename = true,
+                    Overwrite = false
+                });
+            }
+
+            if (result.Error != null || result.SecureUrl == null)
+                return StatusCode(502, result.Error?.Message ?? "Upload to Cloudinary failed");
+
+            var media = new Multimedia
+            {
+                Business_id = business.Business_id,
+                fileUrl = result.SecureUrl.ToString(),
+            };
+
+            await db.Multimedias.AddAsync(media);
+            await db.SaveChangesAsync();
+
+            return Ok(new { media.MultimediaId, media.Business_id, media.fileUrl });
+        }
+
+        [HttpDelete("DeleteMedia/{id}")]
+        public async Task<IActionResult> DeleteMedia(int id)
+        {
+            var media = await db.Multimedias.FindAsync(id);
+            if (media == null) return NotFound();
+
+            var (publicId, type) = ParseCloudinaryUrl(media.fileUrl);
+            if (publicId != null)
+            {
+                var cloudinary = new Cloudinary(new Account(cloudName, apiKey, apiSecret));
+                var result = await cloudinary.DestroyAsync(
+                    new DeletionParams(publicId) { ResourceType = type, Invalidate = true });
+
+                if (result.Result != "ok" && result.Result != "not found")
+                    return StatusCode(502, "Failed to delete file from Cloudinary");
+            }
+
+            db.Multimedias.Remove(media);
+            await db.SaveChangesAsync();
+            return Ok();
+        }
+
+        [HttpDelete("deleteGroup/{id}")]
+        public async Task<IActionResult> deleteGroup(int id)
+        {
+            var group = await db.BusinessGroups.FindAsync(id);
+            if (group == null) return NotFound();
+
+            db.BusinessGroups.Remove(group);
+
+            await db.SaveChangesAsync();
+            return Ok();
+        }
+
+        /// يستخرج publicId ونوع الملف من رابط Cloudinary
+        private static (string? publicId, ResourceType type) ParseCloudinaryUrl(string? url)
+        {
+            if (!Uri.TryCreate(url, UriKind.Absolute, out var uri)) return (null, ResourceType.Image);
+
+            var segments = uri.AbsolutePath.Trim('/').Split('/').ToList();
+            var uploadIndex = segments.IndexOf("upload");
+            if (uploadIndex < 1) return (null, ResourceType.Image);
+
+            var type = segments[uploadIndex - 1] switch
+            {
+                "video" => ResourceType.Video,
+                "raw" => ResourceType.Raw,
+                _ => ResourceType.Image
+            };
+
+            var rest = segments.Skip(uploadIndex + 1).ToList();
+            if (rest.Count > 0 && Regex.IsMatch(rest[0], @"^v\d+$")) rest.RemoveAt(0); // رقم النسخة
+
+            var path = Uri.UnescapeDataString(string.Join("/", rest));
+
+            // publicId للصور والفيديو يكون بدون الامتداد
+            if (type != ResourceType.Raw)
+            {
+                var dot = path.LastIndexOf('.');
+                if (dot > path.LastIndexOf('/')) path = path[..dot];
+            }
+
+            return (path, type);
+        }
 
         //[HttpPut("BindBusinessWithPlatforms")]
         //public async Task<IActionResult> BindBusinessWithPlatforms(BindBusinessWithPlatforms model)
@@ -768,6 +997,18 @@ namespace Universal_server.Controllers.Admin
     {
         public int Business_id { get; set; }
         public List<int> PlatformsIds { get; set; }
+    }
+    public class AddNewGroup
+    {
+        public string name { get; set; }
+        public string userId { get; set; }
+        public List<int> businessesIds { get; set; }
+    }
+
+    public class UploadMedia
+    {
+        public int businessId { get; set; }
+        public IFormFile file { get; set; }
     }
 
 }

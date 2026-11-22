@@ -176,7 +176,7 @@ namespace Universal_server.Controllers.Admin
                 query = query
                     .Where(i => i.Platform.BusinessPlatforms
                         .Any(bp => bp.Business_id == businessId));
-                  
+
             }
 
             var items = await query.Where(i => i.PlatformId != null).ToListAsync();
@@ -1347,17 +1347,27 @@ namespace Universal_server.Controllers.Admin
             return Ok(item);
         }
 
-        [HttpGet("SearchAboutItem/{upc}")]
-        public async Task<IActionResult> SearchAboutItem(string upc)
+        [HttpGet("SearchAboutItem/{str}")]
+        public async Task<IActionResult> SearchAboutItem(string str, bool IsUpc)
         {
-            var item = await db.Items.Where(i => i.UPC == upc).FirstOrDefaultAsync();
-            if(item != null)
+            Item item = new Item();
+            if (IsUpc)
+            {
+                item = await db.Items.Where(i => i.UPC == str).FirstOrDefaultAsync();
+            }
+            else
+            {
+                item = await db.Items.Where(i => i.SKU == str).FirstOrDefaultAsync();
+            }
+
+
+            if (item != null)
             {
                 var inventory = await db.Inventories.Where(i => i.ItemId == item.ItemId).FirstOrDefaultAsync();
-                if (inventory != null) 
+                if (inventory != null)
                     return Ok(new
                     {
-                        msg = $"item already exist in item and inventory has {inventory.QtyPublished} piece",
+                        msg = $"المنتج موجود في المخزن {inventory.QtyPublished} قطعة",
                         itemId = item.ItemId,
                         inventoryId = inventory.Inventory_id,
                         qty = inventory.QtyPublished,
@@ -1366,7 +1376,7 @@ namespace Universal_server.Controllers.Admin
                     });
                 return Ok(new
                 {
-                    msg = $"item already exist in item only",
+                    msg = $"المنتج موجود في جدول المنتجات فقط, يمكنك إضافته للمخزن",
                     itemId = item.ItemId,
                     existInItem = true,
                     existInInv = false,
@@ -1375,7 +1385,7 @@ namespace Universal_server.Controllers.Admin
             }
             return Ok(new
             {
-                msg = $"item does not exist you can add it as a new item",
+                msg = $"المنتج غير موجود, يمكنك اضافته الآم",
                 existInItem = false,
                 existInInv = false,
                 qty = 0,
@@ -1396,23 +1406,33 @@ namespace Universal_server.Controllers.Admin
         }
 
 
-        [HttpPost("AddItemToInv/{itemId}")]
-        public async Task<IActionResult> AddItemToInv(int itemId)
+        [HttpPost("AddItemToInv/{itemId}/{businessId}")]
+        public async Task<IActionResult> AddItemToInv(int itemId, int businessId)
         {
-            var inv = await db.Inventories.Where(i => i.ItemId == itemId).FirstOrDefaultAsync();
-            if(inv == null)
+            var inv = await db.Inventories
+                .FirstOrDefaultAsync(i => i.ItemId == itemId);
+
+            if (inv == null)
             {
-                var newInv = new Inventory
+                inv = new Inventory
                 {
                     ItemId = itemId,
+                    QtyPublished = 1,
+                    Business_id = businessId,
+                    Insert_on = DateTime.UtcNow
                 };
-                await db.Inventories.AddAsync(newInv);
-                await db.SaveChangesAsync();
+
+                await db.Inventories.AddAsync(inv);
+            }
+            else
+            {
+                inv.QtyPublished = (inv.QtyPublished ?? 0) + 1;
+                inv.Business_id = businessId;
+                inv.Insert_on = DateTime.UtcNow;
             }
 
-            inv.QtyPublished++;
-
             await db.SaveChangesAsync();
+
             return Ok(inv);
         }
 

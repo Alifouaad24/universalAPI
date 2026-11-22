@@ -131,7 +131,7 @@ namespace Universal_server.Controllers.Admin
                     var item = new Item { UPC = dto.Upc, PlatformId = 3 };
                     await dbContext.Items.AddAsync(item);
                     await dbContext.SaveChangesAsync();
-
+                    
                     inv = new Inventory { ItemId = item.ItemId };
                     await dbContext.Inventories.AddAsync(inv);
                     await dbContext.SaveChangesAsync();
@@ -240,7 +240,7 @@ namespace Universal_server.Controllers.Admin
                 await dbContext.ItemImages.AddRangeAsync(itemImages);
 
                 var item = await dbContext.Items.FindAsync(folder.ItemId.Value);
-                var inv = await dbContext.Inventories.FindAsync(folder.ItemId.Value);
+                var inv = await dbContext.Inventories.Where(i => i.ItemId == folder.ItemId.Value).FirstOrDefaultAsync();
 
                 if (item != null)
                 {
