@@ -43,8 +43,8 @@ namespace Universal_server.Controllers.Admin
                 .Include(i => i.platform)
                 .Include(i => i.Size)
                 .Include(i => i.Category)
-                .Include(i => i.Item)
-                    .ThenInclude(i => i.Images)
+                .Include(i => i.Item).ThenInclude(i => i.Images)
+                .Include(i => i.Item).ThenInclude(i => i.CarBrand)
                 .Where(i => !i.IsSold);
 
             if (!business.Role.IsNullOrEmpty() && !business.Role.Contains("Manager"))
@@ -66,8 +66,8 @@ namespace Universal_server.Controllers.Admin
                 .Include(i => i.platform)
                 .Include(i => i.Size)
                 .Include(i => i.Category)
-                .Include(i => i.Item)
-                    .ThenInclude(i => i.Images)
+                .Include(i => i.Item).ThenInclude(i => i.Images)
+                .Include(i => i.Item).ThenInclude(i => i.CarBrand)
                 .Where(i => i.Item.CategoryId == null || i.ItemCondition == null || i.SitePrice == null)
                 .Where(i => i.Status == null)
                 .Where(i => !i.IsSold);
@@ -92,8 +92,8 @@ namespace Universal_server.Controllers.Admin
                 .Include(i => i.platform)
                 .Include(i => i.Size)
                 .Include(i => i.Category)
-                .Include(i => i.Item)
-                    .ThenInclude(i => i.Images)
+                .Include(i => i.Item).ThenInclude(i => i.Images)
+                .Include(i => i.Item).ThenInclude(i => i.CarBrand)
                 .Where(i => !i.IsSold);
 
             if (!string.IsNullOrEmpty(business.Role) &&
@@ -122,8 +122,8 @@ namespace Universal_server.Controllers.Admin
                 .Include(i => i.platform)
                 .Include(i => i.Size)
                 .Include(i => i.Category)
-                .Include(i => i.Item)
-                    .ThenInclude(i => i.Images)
+                .Include(i => i.Item).ThenInclude(i => i.Images)
+                .Include(i => i.Item).ThenInclude(i => i.CarBrand)
                 .Where(i => !i.IsSold)
                 .Where(i => i.Item.CategoryId != null)
                 .Where(i => i.ItemConditionId != null)
@@ -148,6 +148,7 @@ namespace Universal_server.Controllers.Admin
                 .Include(i => i.Size)
                 .Include(i => i.Category)
                 .Include(i => i.Item).ThenInclude(i => i.Images)
+                .Include(i => i.Item).ThenInclude(i => i.CarBrand)
                 .Where(i => i.Status.Contains("published"))
                 .Where(i => i.IsProccessedInInventory)
                 .Where(i => !i.IsSold);
