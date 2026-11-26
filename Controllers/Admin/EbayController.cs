@@ -12,6 +12,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Net;
 using System.Text.RegularExpressions;
+using Universal_server.Models;
 
 namespace Universal_server.Controllers.Admin
 {
@@ -617,6 +618,256 @@ namespace Universal_server.Controllers.Admin
         //}
 
 
+        //// 3. نشر منتج كامل على eBay باستخدام tokenId
+        //[HttpPost("publish-product/{tokenId}")]
+        //public async Task<IActionResult> PublishProduct(string tokenId, [FromBody] ProductDto product)
+        //{
+        //    var inv0 = await _context.Inventories.Include(i => i.Item).Where(i => i.Item.Description == product.Title
+        //                                                 && i.Item.ItemDetails == product.Description && i.Item.UPC == product.UPC)
+        //                                                .FirstOrDefaultAsync();
+
+        //    if (inv0 != null && (inv0.Item!.SKU == null || inv0.Item!.SKU == ""))
+        //    {
+        //        inv0.Item!.SKU = product.Sku;
+        //        await _context.SaveChangesAsync();
+        //    }
+
+
+        //    string token;
+        //    try
+        //    {
+        //        token = GetValidAccessToken(tokenId);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return Unauthorized(ex.Message);
+        //    }
+
+        //    var client = _httpClientFactory.CreateClient();
+
+        //    var itemSpecifics = new Dictionary<string, string[]>();
+
+        //    // Brand
+        //    itemSpecifics.Add("Brand", new[] { string.IsNullOrWhiteSpace(product.Brand) ? "Does not apply" : product.Brand });
+
+        //    // Type
+        //    string typeValue = GetTypeForProduct(product);
+        //    itemSpecifics.Add("Type", new[] { typeValue ?? "Does not apply" });
+
+        //    // إضافة أي Item Specifics أخرى من metadata إذا متوفرة
+        //    if (product.RequiredAspectsFromMetadata != null)
+        //    {
+        //        foreach (var aspect in product.RequiredAspectsFromMetadata)
+        //        {
+        //            if (!itemSpecifics.ContainsKey(aspect.Name))
+        //                itemSpecifics.Add(aspect.Name, new[] { aspect.DefaultValue ?? "Does not apply" });
+        //        }
+        //    }
+
+
+        //    // أ. إنشاء Inventory
+        //    var inventoryPayload = new
+        //    {
+        //        product = new
+        //        {
+        //            title = product.Title,
+        //            description = $"<p>{product.Description}</p>",
+        //            aspects = itemSpecifics,
+
+        //            upc = string.IsNullOrWhiteSpace(product.UPC) ? null : new[] { product.UPC },
+        //            imageUrls = product.ImageUrls,
+
+        //        },
+        //        condition = product.Condition,
+        //        packageWeightAndSize = new
+        //        {
+        //            dimensions = new { height = 10, length = 20, width = 15, unit = "INCH" },
+        //            weight = new { value = 2, unit = "POUND" }
+        //        },
+        //        availability = new
+        //        {
+        //            shipToLocationAvailability = new { quantity = product.Quantity }
+        //        }
+        //    };
+
+        //    var invRequest = new HttpRequestMessage(
+        //        HttpMethod.Put,
+        //        $"https://api.ebay.com/sell/inventory/v1/inventory_item/{product.Sku}")
+        //    {
+        //        Content = new StringContent(System.Text.Json.JsonSerializer.Serialize(inventoryPayload), Encoding.UTF8, "application/json")
+        //    };
+        //    invRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        //    invRequest.Content.Headers.ContentLanguage.Add("en-US");
+
+        //    var invResponse = await client.SendAsync(invRequest);
+        //    if (!invResponse.IsSuccessStatusCode)
+        //        return StatusCode((int)invResponse.StatusCode, $"Inventory creation failed: {await invResponse.Content.ReadAsStringAsync()}");
+
+        //    var offerPayload = new
+        //    {
+        //        sku = product.Sku,
+        //        marketplaceId = "EBAY_US",
+        //        format = "FIXED_PRICE",
+        //        availableQuantity = product.Quantity,
+        //        pricingSummary = new
+        //        {
+        //            price = new { value = product.Price.ToString("F2"), currency = product.Currency ?? "USD" }
+        //        },
+        //        listingPolicies = new
+        //        {
+        //            fulfillmentPolicyId = product.FulfillmentPolicyId,
+        //            paymentPolicyId = product.PaymentPolicyId,
+        //            returnPolicyId = product.ReturnPolicyId
+        //        },
+        //        categoryId = product.CategoryId,
+        //        listingDescription = $"<h2>{product.Title}</h2><p>{product.Description}</p>",
+        //        merchantLocationKey = "Store1"
+        //    };
+
+
+        //    string offerId = product.EbayOfferID != null ? product.EbayOfferID : string.Empty;
+        //    var offerRequest = new HttpRequestMessage(HttpMethod.Post, "https://api.ebay.com/sell/inventory/v1/offer")
+        //    {
+        //        Content = new StringContent(System.Text.Json.JsonSerializer.Serialize(offerPayload), Encoding.UTF8, "application/json")
+        //    };
+        //    offerRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        //    offerRequest.Content.Headers.ContentLanguage.Add("en-US");
+
+        //    var inv = await _context.Inventories.Include(i => i.Item).ThenInclude(ii => ii.Images)
+        //        .Where(i => i.Item.UPC == product.UPC).FirstOrDefaultAsync();
+
+        //    if (string.IsNullOrEmpty(product.EbayOfferID))
+        //    {
+        //        var offerResponse = await client.SendAsync(offerRequest);
+        //        if (!offerResponse.IsSuccessStatusCode)
+        //            return StatusCode((int)offerResponse.StatusCode, $"Offer creation failed: {await offerResponse.Content.ReadAsStringAsync()}");
+
+        //        var jsonOffer = await offerResponse.Content.ReadAsStringAsync();
+        //        offerId = JsonDocument.Parse(jsonOffer).RootElement.GetProperty("offerId").GetString();
+
+        //        if (inv != null)
+        //        {
+        //            inv.EbayOfferID = offerId;
+        //            inv.Status = "Offer Made Only";
+        //            await _context.SaveChangesAsync();
+        //        }
+        //    }
+        //    else
+        //    {
+        //        var deleteResult = await DeleteEbayOffer(tokenId, inv.Inventory_id);
+
+        //        if (deleteResult is ObjectResult objectResult &&
+        //            objectResult.StatusCode != 200)
+        //        {
+        //            return BadRequest("Old eBay offer deletion failed");
+        //        }
+
+        //        var offerResponse = await client.SendAsync(offerRequest);
+        //        if (!offerResponse.IsSuccessStatusCode)
+        //            return StatusCode((int)offerResponse.StatusCode, $"Offer creation failed: {await offerResponse.Content.ReadAsStringAsync()}");
+
+        //        var jsonOffer = await offerResponse.Content.ReadAsStringAsync();
+        //        offerId = JsonDocument.Parse(jsonOffer).RootElement.GetProperty("offerId").GetString();
+
+        //        if (inv != null)
+        //        {
+        //            inv.EbayOfferID = offerId;
+        //            inv.Status = "Offer Made Only";
+        //            await _context.SaveChangesAsync();
+        //        }
+
+        //    }
+
+
+        //    // ج. نشر Offer
+        //    var publishRequest = new HttpRequestMessage(HttpMethod.Post, $"https://api.ebay.com/sell/inventory/v1/offer/{offerId}/publish");
+        //    publishRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        //    var publishResponse = await client.SendAsync(publishRequest);
+        //    if (!publishResponse.IsSuccessStatusCode)
+        //    {
+        //        inv.Notes = $"Publish failed: {await publishResponse.Content.ReadAsStringAsync()}";
+        //        return StatusCode((int)publishResponse.StatusCode, $"Publish failed: {await publishResponse.Content.ReadAsStringAsync()}");
+        //    }
+                
+
+        //    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        //    // بعد النشر الناجح، استرجع معلومات الـ offer للحصول على listingId
+        //    var getOfferRequest = new HttpRequestMessage(HttpMethod.Get, $"https://api.ebay.com/sell/inventory/v1/offer/{offerId}");
+        //    getOfferRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        //    /////////////////////////////////////
+        //    ///
+
+        //    //await Task.Delay(10000);
+        //    //var getOfferResponse = await client.SendAsync(getOfferRequest);
+        //    //if (!getOfferResponse.IsSuccessStatusCode)
+        //    //{
+        //    //    return StatusCode((int)getOfferResponse.StatusCode, $"Failed to retrieve listing info: {await getOfferResponse.Content.ReadAsStringAsync()}");
+        //    //}
+
+        //    //var offerJson = await getOfferResponse.Content.ReadAsStringAsync();
+        //    //var offerData = JsonDocument.Parse(offerJson).RootElement;
+
+        //    //string listingId = offerData.TryGetProperty("listingId", out var idProp) ? idProp.GetString() : null;
+        //    //string ebayUrl = listingId != null ? $"https://www.ebay.com/itm/{listingId}" : null;
+
+
+        //    // here update ain alfhd inv tbl
+
+        //    ///////////////////////
+
+        //    await Task.Delay(5000);
+        //    string? listingId = null;
+        //    var getOfferResponse = await client.SendAsync(getOfferRequest);
+
+        //    if (getOfferResponse.IsSuccessStatusCode)
+        //    {
+        //        var offerJson = await getOfferResponse.Content.ReadAsStringAsync();
+        //        var offerData = JsonDocument.Parse(offerJson).RootElement;
+
+        //        if (offerData.TryGetProperty("listingId", out var prop))
+        //        {
+        //            listingId = prop.GetString();
+
+        //        }
+        //    }
+
+        //    if (inv != null)
+        //    {
+        //        inv.EbayInvID = product.Sku;
+        //        inv.EbayOfferID = offerId;
+        //        inv.Status = "Auto Published";
+        //        inv.EbayListingId = listingId;
+        //        inv.Notes = string.Empty;
+        //        inv.QtyPublished -= product.Quantity;
+        //        inv.QtyInInventory = product.Quantity;
+
+        //        foreach (var imageRec in inv.Item.Images)
+        //        {
+        //            imageRec.IsPublishedOnEbay = false;
+        //        }
+
+        //        foreach (var imageRec in inv.Item.Images)
+        //        {
+        //            if (product.ImageUrls.Contains(imageRec.ImageUrl))
+        //            {
+        //                imageRec.IsPublishedOnEbay = true;
+        //            }
+        //        }
+
+        //        await _context.SaveChangesAsync();
+        //    }
+
+        //    return Ok(new
+        //    {
+        //        message = "Product published successfully",
+        //        offerId,
+        //        listingId,
+        //    });
+        //}
+
+
         // 3. نشر منتج كامل على eBay باستخدام tokenId
         [HttpPost("publish-product/{tokenId}")]
         public async Task<IActionResult> PublishProduct(string tokenId, [FromBody] ProductDto product)
@@ -788,7 +1039,7 @@ namespace Universal_server.Controllers.Admin
                 inv.Notes = $"Publish failed: {await publishResponse.Content.ReadAsStringAsync()}";
                 return StatusCode((int)publishResponse.StatusCode, $"Publish failed: {await publishResponse.Content.ReadAsStringAsync()}");
             }
-                
+
 
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -857,6 +1108,19 @@ namespace Universal_server.Controllers.Admin
 
                 await _context.SaveChangesAsync();
             }
+
+
+            var currentPlatform = await _context.Platforms.Where(p => p.Description.Trim() == "ebay").FirstOrDefaultAsync();
+
+            var newPublished = new Inventory_Published_Items
+            {
+                Inventory_id = inv.Inventory_id,
+                Platform_id = currentPlatform.Platform_id,
+                PublishedOn = DateOnly.FromDateTime(DateTime.UtcNow),
+            };
+
+            await _context.Inventory_Published_Items.AddAsync(newPublished);
+            await _context.SaveChangesAsync();
 
             return Ok(new
             {

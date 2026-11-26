@@ -966,6 +966,70 @@ namespace Universal_server.Controllers.Admin
 
         //    return Ok(platform);
         //}
+
+
+        [HttpPost("BindBusinessWithNewAddress")]
+        public async Task<IActionResult> BindBusinessWithNewAddress(AddressToBindWitjhBusiness model)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            // Check business
+            var businessExists = await db.Businesses
+                .AnyAsync(b => b.Business_id == model.BusinessId);
+
+            if (!businessExists)
+                return NotFound("Business not found.");
+
+            // Find existing address
+            var address = await db.Addresses.FirstOrDefaultAsync(a =>
+                a.Line_1 == model.Line1 &&
+                a.Line_2 == model.Line2 &&
+                a.Post_code == model.PostCode &&
+                a.Us_City == model.UsCity);
+
+            // Create address if not exists
+            if (address == null)
+            {
+                address = new Address
+                {
+                    Line_1 = model.Line1,
+                    Line_2 = model.Line2,
+                    Post_code = model.PostCode,
+                    Us_City = model.UsCity,
+                    CountryId = 3
+                };
+
+                await db.Addresses.AddAsync(address);
+                await db.SaveChangesAsync();
+            }
+
+            // Check existing business-address relationship
+            var relationshipExists = await db.Business_Addresses.AnyAsync(a =>
+                a.Address_id == address.Address_id &&
+                a.Business_id == model.BusinessId);
+
+            if (relationshipExists)
+                return Ok("This address is already linked to this business.");
+
+            // Create relationship
+            var businessAddress = new Business_Address
+            {
+                Address_id = address.Address_id,
+                Business_id = model.BusinessId
+            };
+
+            await db.Business_Addresses.AddAsync(businessAddress);
+            await db.SaveChangesAsync();
+
+            return Ok(new
+            {
+                message = "Address successfully linked to business.",
+                addressId = address.Address_id,
+                businessId = model.BusinessId
+            });
+        }
+
     }
 
     public class AddActivitiesToBusiness
@@ -1009,6 +1073,16 @@ namespace Universal_server.Controllers.Admin
     {
         public int businessId { get; set; }
         public IFormFile file { get; set; }
+    }
+
+
+    public class AddressToBindWitjhBusiness
+    {
+        public string Line1 { get; set; }
+        public string Line2 { get; set; }
+        public string PostCode { get; set; }
+        public string UsCity { get; set; }
+        public int  BusinessId { get; set; }
     }
 
 }

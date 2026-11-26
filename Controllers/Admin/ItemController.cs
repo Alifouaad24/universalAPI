@@ -23,6 +23,7 @@ namespace Universal_server.Controllers.Admin
     public class ItemController : ControllerBase
     {
         UniversalDbContext db;
+        MasterDBContext dbMaster;
         MasterDBContext masterDBContext;
         private readonly IConfiguration configuration;
         private Cloudinary cloudinary;
@@ -30,7 +31,7 @@ namespace Universal_server.Controllers.Admin
         string cloudName;
         string apiKey;
         string apiSecret;
-        public ItemController(UniversalDbContext db, IConfiguration configuration, MasterDBContext masterDBContext, UserManager<IdentityUserData> userManager)
+        public ItemController(UniversalDbContext db, IConfiguration configuration, MasterDBContext masterDBContext, UserManager<IdentityUserData> userManager, MasterDBContext dbMaster)
         {
             this.db = db;
             this.configuration = configuration;
@@ -41,6 +42,26 @@ namespace Universal_server.Controllers.Admin
             ));
             this.masterDBContext = masterDBContext;
             _userManager = userManager;
+            this.dbMaster = dbMaster;
+        }
+
+        [HttpGet("GetItemFromDbMax2024/{sku}")]
+        public async Task<IActionResult> GetItemFromDbMax2024(string sku)
+        {
+            if (string.IsNullOrWhiteSpace(sku))
+                return BadRequest(new { message = "SKU is required" });
+
+            var normalized = sku.Trim();
+
+            var item = await dbMaster.AinAlfhdItem
+                .AsNoTracking()
+                .Include(i => i.ItemImages)
+                .FirstOrDefaultAsync(i => i.Sku.Trim() == normalized);
+
+            if (item == null)
+                return NotFound(new { message = $"No item found with SKU '{normalized}'" });
+
+            return Ok(item);
         }
 
         [HttpGet("{businessId}")]
@@ -1436,7 +1457,99 @@ namespace Universal_server.Controllers.Admin
             return Ok(inv);
         }
 
+        [Authorize]
+        [HttpPut("UpdateItemDataFromScraping/{itemId}")]
+        public async Task<IActionResult> UpdateItemDataFromScraping(int itemId, [FromBody] ScrapeItemModel model)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return NotFound();
 
+            var checkItem = await db.Items.FindAsync(itemId);
+            if (checkItem == null) return NotFound();
+
+            checkItem.ItemDescription = model.description ?? checkItem.ItemDescription;
+
+            if (!string.IsNullOrWhiteSpace(model.brand))
+            {
+                checkItem.CarBrandId = await GetBrandIdByName(model.brand);
+            }
+
+
+            checkItem.ItemDetails = model.details;
+            checkItem.SKU = model.sku ?? checkItem.SKU;
+            checkItem.Height = model.height ?? checkItem.Height;
+            checkItem.Weight = model.weight ?? checkItem.Weight;
+            checkItem.Width = model.width ?? checkItem.Width;
+            checkItem.ShortCode = model.item_number_id ?? checkItem.ShortCode;
+            checkItem.Model = model.model ?? checkItem.Model;
+            checkItem.BasePrice = model.itemPrice ?? checkItem.BasePrice;
+            checkItem.IsScraped = true;
+
+
+            using var httpClient = new HttpClient();
+
+            foreach (var url in model.images)
+            {
+                try
+                {
+                    var imageBytes = await httpClient.GetByteArrayAsync(url);
+
+                    using var stream = new MemoryStream(imageBytes);
+
+                    var uploadParams = new ImageUploadParams
+                    {
+                        File = new FileDescription("image.jpg", stream),
+                        Folder = "Items"
+                    };
+
+                    var uploadResult = await cloudinary.UploadAsync(uploadParams);
+
+                    if (uploadResult.Error != null)
+                    {
+                        throw new Exception(uploadResult.Error.Message);
+                    }
+
+                    var newImgItem = new ItemImage
+                    {
+                        ImageUrl = uploadResult.SecureUrl.ToString(),
+                        ItemId = checkItem.ItemId,
+                        UserId = user.Id
+                    };
+
+                    await db.ItemImages.AddAsync(newImgItem);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error uploading image: {ex.Message}");
+                }
+            }
+
+            await db.SaveChangesAsync();
+            return Ok(checkItem);
+        }
+
+        private async Task<int> GetBrandIdByName(string name)
+        {
+            name = name.Trim();
+
+            var brand = await db.CarBrands
+                .FirstOrDefaultAsync(b => b.CarBrandName.Trim() == name);
+
+            if (brand != null)
+            {
+                return brand.CarBrandId;
+            }
+
+            var newBrand = new CarBrand
+            {
+                CarBrandName = name
+            };
+
+            await db.CarBrands.AddAsync(newBrand);
+            await db.SaveChangesAsync();
+
+            return newBrand.CarBrandId;
+        }
 
     }
 }
@@ -1489,5 +1602,23 @@ public class BindImagesWithItemForDuty
     public string? upc { get; set; }
     public int currentInventoryId { get; set; }
 
+}
 
+public class ScrapeItemModel
+{
+    public string? description { get; set; }
+    public string? brand { get; set; }
+    public string? model { get; set; }
+    public decimal? itemPrice { get; set; }
+    public List<string>? images { get; set; }
+
+    /// /// exstra data // ///////////////////////////////////////
+    public string? details { get; set; }
+    public string? sku { get; set; }
+    public string? upc { get; set; }
+    public string? item_number_id { get; set; }
+    public decimal? height { get; set; }
+    public decimal? width { get; set; }
+    public decimal? deepEqual { get; set; }
+    public decimal? weight { get; set; }
 }

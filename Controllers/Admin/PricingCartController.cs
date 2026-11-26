@@ -17,6 +17,19 @@ namespace Universal_server.Controllers.Admin
             _context = context;
         }
 
+        [HttpGet("{pricingId}")]
+        public async Task<IActionResult> GetPricingCartDataById(int pricingId)
+        {
+            var pricngCart = await _context.PricingCartItems
+                .Include(pci => pci.Item).ThenInclude(i => i.Color)
+                .Include(pci => pci.Item).ThenInclude(i => i.Category)
+                .Include(pci => pci.Item).ThenInclude(i => i.Size)
+                .Include(pci => pci.Item).ThenInclude(i => i.Images)
+                .Where(pci => pci.PricingCartId == pricingId)
+                .ToListAsync();
+            return Ok(pricngCart);
+        }
+
         [HttpPost]
         public async Task<IActionResult> AddNewPricing([FromBody] List<CartPricingItems> model)
         {

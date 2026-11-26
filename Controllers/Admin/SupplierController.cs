@@ -33,7 +33,7 @@ namespace Universal_server.Controllers.Admin
         public async Task<IActionResult> GetConsumers(int ProviderId)
         {
             var suppliers = await _context.Suppliers
-                .Include(s => s.ConsumerBusiness)
+                .Include(s => s.ConsumerBusiness).ThenInclude(b => b.BusinessAddresses).ThenInclude(ba => ba.Address)
                 .Include(s => s.ProviderBusiness)
                 .Include(s => s.Service)
                 .Include(s => s.Platform)

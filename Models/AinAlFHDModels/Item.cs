@@ -7,6 +7,8 @@ namespace Universal_server.Models.AinAlFHDModels
     {
         public int Id { get; set; }
 
+        public AinAlfhdCategory? Category { get; set; }
+        [ForeignKey(nameof(Category))]
         public int? CategoryId { get; set; }
         public int? sub_category { get; set; }
         public string? EngName { get; set; }
